@@ -1,0 +1,36 @@
+{% extends "admin/base_site.html" %}
+{% block title %}Управление документами{% endblock %}
+
+{% block content %}
+<h2>PDF-документы в /media/docs/</h2>
+
+{% if messages %}
+  {% for message in messages %}
+    <div class="success" style="color: green;">✓ {{ message }}</div>
+  {% endfor %}
+{% endif %}
+
+{% if files %}
+  <ul style="list-style-type: none; padding: 0;">
+    {% for file in files %}
+      <li style="margin: 10px 0; padding: 8px; border: 1px solid #eee; border-radius: 4px;">
+        📄 <a href="/media/docs/{{ file|urlencode }}" target="_blank">{{ file }}</a>
+        
+        <form method="post" style="display: inline; margin-left: 15px;">
+          {% csrf_token %}
+          <input type="hidden" name="filename" value="{{ file }}">
+          <button type="submit" 
+                  onclick="return confirm('Удалить «{{ file }}»?')"
+                  style="color: red; cursor: pointer; background: none; border: none; text-decoration: underline;">
+            🗑️ Удалить
+          </button>
+        </form>
+      </li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p>Нет PDF-файлов в папке <code>media/docs/</code>.</p>
+{% endif %}
+
+<p><a href="{% url 'admin:index' %}">← Вернуться в админку</a></p>
+{% endblock %}

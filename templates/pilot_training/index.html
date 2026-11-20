@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+ {% load static %}
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <title>{% block title %}SIM Training{% endblock %}</title>
+<!--    <title>Pilot training</title>-->
+      <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <!-- Основной favicon (ICO — для старых браузеров) -->
+    <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}?v=6">
+
+    <!-- Современный favicon (PNG — Safari, Chrome, Firefox) -->
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'apple-touch-icon.png' %}?v=6">
+
+    <!-- Иконка для Safari, macOS, iOS (обязательно rel="apple-touch-icon") -->
+    <link rel="apple-touch-icon" href="{% static 'apple-touch-icon.png' %}?v=6">
+
+</head>
+<body>
+    <!-- шапка -->
+    <header class="header">
+    <div class="header__logo">
+
+         <img src="{% get_media_prefix %}images/Logo GVE.png" alt="logo" class="logo">
+<!--        <images src="images/logo_ns.jpg" alt="logo" class="logo">-->
+    </div>
+        <div class="header__logo-title">
+            <p>АУЦ</p>
+            <p class="cource_info">Тренажерная подготовка</p>
+
+            </div>
+    <nav>
+        <ul>
+            <li><a href="#" id="login-link" class="login-link">Страница входа</a></li>
+            <li><span id="instructor-name-display" style="color: rgb(255, 255, 255); font-weight: regular; padding-right: 10px;"></span></li>
+            <li><a href="#" id="logout-link" style="display:none; padding-right: 20px; font-weight: regular; color:rgb(255, 255, 255);" onclick="logout()">Выход</a></li>
+        </ul>
+    </nav>
+    </header>
+    <!-- основной контент -->
+<div class="content">
+    <div class="button-container">
+        <button class="nav-button" onclick="showDocumentation()">Документация</button>
+        <button class="nav-button" onclick="showCalendar()">Календарь сессий</button>
+        <button class="nav-button" onclick="showPilot()">Выбор пилота и просмотр данных</button>
+        <button class="nav-button" onclick="openSession()">Открыть сессию</button>
+
+    </div>
+
+<main class="main">
+   <div class="login-container" style="min-height: 470px">
+        <h2>Вход в систему</h2>
+            <form onsubmit="event.preventDefault(); login();">
+<!--       <form id="login-form" method="post">-->
+                <label for="username">Логин:</label>
+                <input type="text" id="username" name="username" required><br><br>
+
+                <label for="password">Пароль:</label>
+                <input type="password" id="password" name="password" required><br><br>
+
+                <input type="submit" value="Войти">
+            </form>
+
+        <div id="user-info" style="margin-top: 20px;"></div>
+    </div>
+
+  <!-- ЕДИНЫЙ КОНТЕЙНЕР ДЛЯ ВСЕХ ДИНАМИЧЕСКИХ БЛОКОВ -->
+  <div id="content-area" style="margin-top: 20px; display: block; min-height: 470px">
+<!--        <div id="documentation-container" style="display: none; margin-top: 24px;">-->
+<!--            <h3>Доступные документы:</h3>-->
+<!--            <ul id="docs-list"></ul>-->
+<!--        </div>-->
+  </div>
+
+</main>
+</div>
+
+<!-- подвал -->
+ <div class="footer">
+        <nav>
+            <ul>
+              <li><a href="mailto:gvedynamics@gmail.com?subject=Информация с сайта SIM Training"><img src="{% get_media_prefix %}images/mail_1.png" alt="Mail"></a></li>
+<!--              <li><a href="#" target="_blank"><img src="{% get_media_prefix %}images/telegram-logo_white.png" alt="Telegram"></a></li>-->
+
+<!--              <li><a href="#" target="_blank"><images src="images/telegram-logo_white.png" alt="Telegram"></a></li>-->
+
+            </ul>
+        </nav>
+
+        <p class="copyright"><a href="http://gvedynamics.ru" target="_blank">&copy; Вадим Гущин, 2026</a></p><br>
+    </div>
+
+</footer>
+
+<button id="backToTop" class="back-to-top" aria-label="Вернуться наверх">
+    ↑
+</button>
+
+  <script src="{% static 'js/script.js' %}"></script>
+
+</body>
+</html>

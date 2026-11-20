@@ -1,0 +1,12 @@
+{% extends "admin/base_site.html" %}
+{% block title %}Загрузка Excel{% endblock %}
+
+{% block content %}
+<!--  <h1>Загрузка сессий из Excel</h1>-->
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}<br>
+    {{ form.as_p }}
+    <button type="submit" class="default">Загрузить</button>
+  </form>
+  <p><a href="{{ request.META.HTTP_REFERER }}">← Назад</a></p>
+{% endblock %}

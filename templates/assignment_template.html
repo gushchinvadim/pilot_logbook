@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Задание на тренировку</title>
+    <style>
+        body {
+            font-family: 'Times New Roman', serif;
+            font-size: 12pt;
+            margin: 1cm;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+        td {
+            border: 1px solid black;
+            padding: 5px;
+            vertical-align: top;
+            word-wrap: break-word;
+        }
+
+        .no-border {
+            border: none;
+        }
+        .center {
+            text-align: center;
+        }
+
+        .session-title {
+            text-align: right;
+        }
+
+        .signature {
+            margin-top: 20px;
+        }
+        @media print {
+            @page {
+                size: A4;
+                margin: 1cm;
+            }
+            body {
+                margin: 0;
+            }
+            button.print-btn {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!--<h3 class="center">Подготовка на комплексном тренажере FFS(Full Flight Simulator)</h3>-->
+<h3 class="session-title" id="main-session-title">{% session %}</h3>
+
+<table>
+  <tr>
+    <td colspan="9">
+      <strong id="pilot-assignment">Задание на тренировку {% pilotName %}</strong><br>
+      Раздел 2. Подготовка на комплексном тренажёре FFS (Full flight simulator)
+    </td>
+  </tr>
+  <tr>
+    <td colspan="3">B737 600/700/800/900 <br> Type Rating Course</td>
+    <td colspan="3"><strong id="table-session">{% session %}</strong></td>
+    <td colspan="3">Аэродром: <span id="venue">{% dep %}, {% arr %}</span></td>
+  </tr>
+</table>
+
+<table>
+    <tr>
+        <td colspan="5">Сценарий тренировки:</td>
+        <td>Соответствие Проверке навыков (SKILL TEST)</td>
+        <td>Пункт прогресса</td>
+        <td>Минимальная оценка</td>
+        <td>Оценка</td>
+    </tr>
+    <tbody id="exercises-body">
+        <!-- Строки будут добавлены динамически -->
+    </tbody>
+</table>
+
+
+<table>
+    <tr>
+        <td colspan="10">
+            <b>Комментарии/Не выполненные задания (При необходимости используйте обратную сторону):</b>
+            <p id="general-notes"></p>
+        </td>
+    </tr>
+</table>
+
+<table>
+    <tr>
+        <td colspan="2">Ознакомлен: <br><br><br> __________________<br><br><br><br> __________________ <br> &nbsp;&nbsp;(подпись) <span id=""></span></td>
+        <td colspan="7">Прогресс:<br><br>    □ Следующая сессия &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; □ Дополнительная тренировка<br><br>
+        Дата «___» ________________ 20__ г.<br><br>
+        Инструктор ______________________________________ / ________________  <br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Фамилия И.О./Подпись <span id=""></span></td>
+
+    </tr>
+</table>
+
+
+
+<button class="print-btn" onclick="window.print()">🖨 Распечатать</button>
+
+<script>
+function fillAssignment(data) {
+    // Заполняем общие поля
+    document.getElementById('main-session-title').textContent = data.session;
+    document.getElementById('pilot-assignment').textContent = `Задание на тренировку ${data.pilotName}`;
+    document.getElementById('table-session').textContent = data.session;
+    document.getElementById('venue').textContent = `${data.dep}, ${data.arr}`;
+    document.getElementById('general-notes').textContent = data.generalNotes;
+
+    const exercisesBody = document.getElementById('exercises-body');
+    exercisesBody.innerHTML = '';
+
+    data.exercises.forEach(ex => {
+        const tr = document.createElement('tr');
+
+        // Сценарий
+        const scenario = document.createElement('td');
+        scenario.colSpan = 5;
+        scenario.textContent = `${ex.order || ''}. ${ex.exercise_name}`;
+
+      // Пункт соответствия SKILL
+        const skill = document.createElement('td');
+        skill.textContent = ex.progress_skill_point || '—';
+
+        // Пункт прогресса
+        const progress = document.createElement('td');
+        progress.textContent = ex.progress_point || '—';
+
+        // Минимальная оценка
+        const minScore = document.createElement('td');
+        minScore.textContent = ex.min_score || '—';
+
+        // Оценка
+        const score = document.createElement('td');
+        score.textContent = ex.score || '—';
+
+        tr.appendChild(scenario);
+        tr.appendChild(skill);
+        tr.appendChild(progress);
+        tr.appendChild(minScore);
+        tr.appendChild(score);
+        exercisesBody.appendChild(tr);
+    });
+}
+    // Пример данных
+const mockData = {
+  pilotName: "Петров Иван Сергеевич",
+  session: "Сессия 5",
+  dep: "UWWW",
+  arr: "UUDD",
+  exercises: [
+    { order: 1, exercise_name: "Взлёт с отказом двигателя", progress_point: "3.2", min_score: "3", score: "4" },
+    { order: 2, exercise_name: "Посадка при сдвиге ветра", progress_point: "4.1", min_score: "3", score: "5" }
+  ],
+  generalNotes: "Без замечаний"
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+  fillAssignment(mockData);
+});
+</script>
+
+</body>
+</html>

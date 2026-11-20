@@ -1,0 +1,73 @@
+<div style="margin: 1cm;">
+    <div style="text-align: right; margin-bottom: 10px;">
+        <a href="#" onclick="event.preventDefault(); loadPilotSessions({{ pilot_id }}); return false;" style="margin-right: 10px;">
+            ← Свернуть
+        </a>
+        <button onclick="window.print()">🖨 Печать</button>
+    </div>
+
+    <!-- Твоя печатная форма -->
+    <h3 class="session-title">{{ rating.session.title }}</h3>
+    <table>
+      <tr>
+        <td colspan="9">
+          <strong>Задание на тренировку, пилот: {{ rating.pilot.name }}</strong><br>
+          Раздел 2. Подготовка на комплексном тренажёре FFS (Full flight simulator)
+        </td>
+      </tr>
+      <tr>
+        <td colspan="3">B737 600/700/800/900 <br> Type Rating Course</td>
+        <td colspan="3"><strong>{{ rating.session.title }}</strong></td>
+        <td colspan="3">Аэродромы: _________, _________</td>
+      </tr>
+    </table>
+
+    <table>
+        <tr>
+            <td colspan="5">Сценарий тренировки:</td>
+            <td>Соответствие SKILL TEST</td>
+            <td>Пункт прогресса</td>
+            <td>Мин. оценка</td>
+            <td>Оценка</td>
+        </tr>
+        {% for re in rating_exercises %}
+            {% with ex=re.assignment.exercise %}
+            <tr>
+                <td colspan="5">{{ re.assignment.order|default:"—" }}. {{ ex.name }}</td>
+                <td>{{ ex.skilltest_position|default:"—" }}</td>
+                <td>{{ ex.progress_sheet_number|default:"—" }}</td>
+                <td>{{ ex.min_score|default:"—" }}</td>
+                <td>{{ re.score|default:"—" }}</td>
+            </tr>
+            {% endwith %}
+        {% empty %}
+            <tr><td colspan="9">Нет оценённых упражнений</td></tr>
+        {% endfor %}
+    </table>
+
+    <table>
+        <tr>
+            <td colspan="10">
+                <b>Комментарии/Не выполненные задания:</b>
+                <p>{{ rating.general_notes|linebreaksbr|default:"—" }}</p>
+            </td>
+        </tr>
+    </table>
+
+    <table>
+        <tr>
+            <td colspan="2">
+                Ознакомлен: <br><br><br> {{ rating.pilot.name }}<br><br><br> __________________<br>
+                <span style="font-size: 7pt;">Фамилия И.О./Подпись</span>
+            </td>
+            <td colspan="7">
+                Прогресс:<br><br>
+                <span style="font-size: 16pt;">☐</span> Следующая сессия &nbsp;&nbsp;&nbsp;
+                <span style="font-size: 16pt;">☐</span> Дополнительная тренировка<br><br>
+                Дата «{{ rating.created_at|date:"d" }}» {{ rating.created_at|date:"F Y" }} г.<br><br>
+                Инструктор: {{ rating.instructor.name }} / _____________________<br>
+                <span style="font-size: 7pt;">Фамилия И.О./Подпись</span>
+            </td>
+        </tr>
+    </table>
+</div>

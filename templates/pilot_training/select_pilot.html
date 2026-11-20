@@ -1,0 +1,11 @@
+<!-- templates/pilot_training/select_pilot.html -->
+<h2>Выберите пилота</h2>
+<ul>
+  {% for pilot in pilots %}
+    <li>
+      <a href="{% url 'pilot_training:pilot_ratings_history' pilot.id %}">
+        {{ pilot.user.get_full_name|default:pilot.user.username }}
+      </a>
+    </li>
+  {% endfor %}
+</ul>

@@ -1,0 +1,74 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+<div id="content-main" style="padding: 20px;">
+    <h1>{{ title }}</h1>
+
+    <div style="margin-bottom: 20px;">
+        <a href="{% url 'admin:rating_session_completed_list' %}" class="button">
+            ← Назад к списку
+        </a>
+        <a href="{{ secure_print_url }}" target="_blank" class="button" style="background: #4CAF50; color: white;">
+            🖨️ Печать
+        </a>
+    </div>
+
+    <div class="module" style="padding: 20px; background: white; border-radius: 5px;">
+        <h2>Информация о сессии</h2>
+        <table>
+            <tr>
+                <td><strong>Сессия:</strong></td>
+                <td>{{ rating.session.title }}</td>
+            </tr>
+            <tr>
+                <td><strong>Пилот:</strong></td>
+                <td>{{ rating.pilot.name }}</td>
+            </tr>
+            <tr>
+                <td><strong>Инструктор:</strong></td>
+                <td>{{ rating.instructor.name }}</td>
+            </tr>
+            <tr>
+                <td><strong>Дата создания:</strong></td>
+                <td>{{ rating.created_at|date:"d.m.Y H:i" }}</td>
+            </tr>
+            {% if rating.overall_score %}
+            <tr>
+                <td><strong>Общая оценка:</strong></td>
+                <td>{{ rating.overall_score }}/100</td>
+            </tr>
+            {% endif %}
+        </table>
+    </div>
+
+    <div class="module" style="margin-top: 20px; padding: 20px; background: white; border-radius: 5px;">
+        <h2>Упражнения</h2>
+        {% for exercise in rating_exercises %}
+        <div style="border-bottom: 1px solid #eee; padding: 15px 0;">
+            <h3>{{ exercise.assignment.order }}. {{ exercise.assignment.exercise.name }}</h3>
+
+            {% if exercise.assignment.max_score %}
+            <p><strong>Макс. балл:</strong> {{ exercise.assignment.max_score }}</p>
+            {% endif %}
+
+            {% if exercise.score is not None %}
+            <p><strong>Оценка:</strong> {{ exercise.score }}
+                {% if exercise.assignment.max_score %}
+                /{{ exercise.assignment.max_score }}
+                {% endif %}
+            </p>
+            {% endif %}
+
+            {% if exercise.comments %}
+            <p><strong>Комментарии:</strong></p>
+            <div style="background: #f9f9f9; padding: 10px; border-radius: 3px;">
+                {{ exercise.comments|linebreaks }}
+            </div>
+            {% endif %}
+        </div>
+        {% empty %}
+        <p>Нет упражнений</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

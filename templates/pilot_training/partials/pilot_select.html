@@ -1,0 +1,28 @@
+<!--pilot_training/partials/pilot_select.html-->
+<!--<div class="modal-form">-->
+<!--    <h3>Выберите пилота</h3>-->
+<!--    <div class="form-group">-->
+<!--        <select id="pilot-select" onchange="loadPilotData(this.value)">-->
+<!--            <option value="">&#45;&#45; Выберите пилота &#45;&#45;</option>-->
+<!--            {% for p in pilots %}-->
+<!--                <option value="{{ p.id }}">{{ p.name }}</option>-->
+<!--            {% endfor %}-->
+<!--        </select>-->
+<!--    </div>-->
+<!--    <div id="pilot-data" style="margin-top: 20px;"></div>-->
+<!--</div>-->
+
+<div class="pilot-selector">
+    <h3>Выберите пилота</h3>
+    <input
+        type="text"
+        id="pilot-search-input"
+        placeholder="Введите имя или фамилию..."
+        autocomplete="off"
+        style="width: 100%; padding: 8px; margin-bottom: 10px; font-size: 16px"
+    >
+    <ul id="pilot-suggestions"
+        style="list-style: none; padding: 0; margin: 0; border: 1px solid #ccc; max-height: 200px; overflow-y: auto; display: none;"></ul>
+</div>
+
+<div id="pilot-details"></div>

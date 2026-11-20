@@ -1,0 +1,14 @@
+{% extends 'admin/index.html' %}
+{% load static %}
+{% block title %}Admin SIM Training{% endblock %}
+{% block sidebar %}
+    {{ block.super }}
+    <div class="module">
+        <h2>Аналитика</h2>
+<!--        <ul>-->
+
+<!--               <li style="list-style: none;"><a href="/admin/analytics/" class="btn">📊 Аналитика пилотов</a></li>-->
+<p><a href="/admin/analytics/" class="btn">Аналитика пилотов</a></p>
+<!--        </ul>-->
+    </div>
+{% endblock %}

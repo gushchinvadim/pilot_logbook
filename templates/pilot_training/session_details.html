@@ -1,0 +1,19 @@
+<!-- templates/pilot_training/session_details.html -->
+<h1>Сессия: {{ session.date }}</h1>
+<p><strong>Пилот:</strong> {{ session.pilot.user.get_full_name }}</p>
+<p><strong>Инструктор:</strong> {{ session.instructor.user.get_full_name }}</p>
+
+<h3>Задания и оценки</h3>
+<table border="1" cellpadding="8">
+  <tr><th>Упражнение</th><th>Оценка</th><th>Комментарий</th><th>Оценил</th></tr>
+  {% for task in tasks_with_rating %}
+    <tr>
+      <td>{{ task.template.name }}</td>
+      <td>{{ task.rating.score|default:"—" }}</td>
+      <td>{{ task.rating.feedback|linebreaks|default:"—" }}</td>
+      <td>{{ task.rating.instructor.user.get_full_name|default:"—" }}</td>
+    </tr>
+  {% endfor %}
+</table>
+
+<a href="{% url 'pilot_training:pilot_ratings_history' session.pilot.id %}">← Назад к истории</a>

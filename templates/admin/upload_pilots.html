@@ -1,0 +1,10 @@
+<!-- templates/admin/upload_pilots.html -->
+{% extends "admin/base_site.html" %}
+{% block content %}
+<h2>Загрузка пилотов из Excel</h2>
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Загрузить</button>
+</form>
+{% endblock %}

@@ -1,0 +1,19 @@
+.venv/
+.idea/
+.env
+old_files
+uploads/
+
+# Local build/cache files and private deployment material
+__pycache__/
+*.py[cod]
+frontend/node_modules/
+frontend/dist/
+.env.*
+!frontend/.env.example
+!deploy/production.env.example
+*.dump
+*.sql
+*.sql.gz
+*.tar.gz
+backups/

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Задание на тренировку FTD</title>
+    <style>
+        body {
+            font-family: 'Times New Roman', serif;
+            font-size: 9pt;
+            margin: 1cm;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+        td {
+            border: 1px solid black;
+            padding: 2px;
+            vertical-align: top;
+            word-wrap: break-word;
+        }
+        .session-title {
+            text-align: right;
+        }
+        @media print {
+            @page {
+                size: A4;
+                margin: 0.1cm;
+            }
+            body {
+                margin: 0.5cm 0.5cm 0.5cm 2.0cm;
+            }
+            .print-btn {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<h3 class="session-title">{{ rating.session.title }}</h3>
+
+<table>
+  <tr>
+    <td colspan="9">
+      <strong>Задание на тренировку, пилот: {{ rating.pilot.name }}<br>
+      Раздел 1. Подготовка на процедурном тренажёре FTD (Flight training device)</strong>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="3">B737 600/700/800/900 <br> Type Rating Course</td>
+    <td colspan="3">{{ rating.session.title }}</td>
+    <td colspan="3">Аэродромы: <span id="venue">_______, _______</span></td>
+  </tr>
+</table>
+
+<table>
+    <tr>
+        <td colspan="5">{{ rating.session.description }}<br> Сценарий тренировки:</td>
+        <td colspan="2">НЕ выполнено в соответствии SOP,<br> подпись инструктора</td>
+        <td colspan="2">Выполнено в соответствии SOP,<br> подпись инструктора</td>
+    </tr>
+    {% for re in rating_exercises %}
+        {% with ex=re.assignment.exercise %}
+        <tr>
+            <td colspan="5">{{ re.assignment.order|default:"—" }}. {{ ex.name }}</td>
+            <td colspan="2">
+                {% if re.score and re.score < 3 %}
+                    ✓ Не выполнено
+                {% else %}
+                    —
+                {% endif %}
+            </td>
+            <td colspan="2">
+                {% if re.score and re.score >= 3 %}
+                    ✓ Выполненно
+                {% else %}
+                    —
+                {% endif %}
+            </td>
+        </tr>
+        {% endwith %}
+    {% empty %}
+        <tr><td colspan="9">Нет оценённых упражнений</td></tr>
+    {% endfor %}
+</table>
+
+<table>
+    <tr>
+        <td colspan="10">
+            <b>Комментарии/Не выполненные задания (При необходимости используйте обратную сторону):</b>
+            <div id="general-notes" style="font-size: 10pt; line-height: 1.2;">
+                <!-- Свободные комментарии инструктора -->
+                {% if rating.general_notes %}
+                    {{ rating.general_notes|linebreaksbr }}
+                    <br>
+                {% endif %}
+
+                <!-- Замечания из компетенций с фазами полёта -->
+                {% for re in rating_exercises %}
+                    {% with ex=re.assignment.exercise %}
+                        {% if re.pro_remarks %}
+                            <span>{{ ex.phase_of_flight|default:"Фаза не указана" }}: {{ re.pro_remarks }}</span><br>
+                        {% endif %}
+                        {% if re.com_remarks %}
+                            <span>{{ ex.phase_of_flight|default:"Фаза не указана" }}: {{ re.com_remarks }}</span><br>
+                        {% endif %}
+                        {% if re.fpa_remarks %}
+                            <span>{{ ex.phase_of_flight|default:"Фаза не указана" }}: {{ re.fpa_remarks }}</span><br>
+                        {% endif %}
+                        {% if re.fpm_remarks %}
+                            <span>{{ ex.phase_of_flight|default:"Фаза не указана" }}: {{ re.fpm_remarks }}</span><br>
+                        {% endif %}
+                        {% if re.ltw_remarks %}
+                            <span>{{ ex.phase_of_flight|default:"Фаза не указана" }}: {{ re.ltw_remarks }}</span><br>
+                        {% endif %}
+                        {% if re.psd_remarks %}
+                            <span>{{ ex.phase_of_flight|default:"Фаза не указана" }}: {{ re.psd_remarks }}</span><br>
+                        {% endif %}
+                        {% if re.saw_remarks %}
+                            <span>{{ ex.phase_of_flight|default:"Фаза не указана" }}: {{ re.saw_remarks }}</span><br>
+                        {% endif %}
+                        {% if re.wlm_remarks %}
+                            <span>{{ ex.phase_of_flight|default:"Фаза не указана" }}: {{ re.wlm_remarks }}</span><br>
+                        {% endif %}
+                    {% endwith %}
+                {% empty %}
+                    {% if not rating.general_notes %}
+                        <span>—</span>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </td>
+    </tr>
+</table>
+
+<table>
+    <tr>
+        <td colspan="2">Ознакомлен: <br> {{ rating.pilot.name }}<br><br><br><br> __________________  &nbsp;&nbsp;<p style="font-size: 7pt;">Фамилия И.О./Подпись</p></td>
+        <td colspan="7"><br><br><br><br>
+        Дата «{{ rating.created_at|date:"d" }}» {{ rating.created_at|date:"F Y" }} г.<br><br>
+            Инструктор: {{ rating.instructor.name }} / _____________________  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<p style="font-size: 7pt;">Фамилия И.О./Подпись</p></td>
+    </tr>
+</table>
+
+<button class="print-btn" onclick="window.print()">🖨 Распечатать</button>
+<!--<a href="mailto:veguschin@nordstar.ru?subject=Задание на тренировку: {{ rating.pilot.name|urlencode }} – {{ rating.session.title|urlencode }}&body=Здравствуйте!%0A%0AПрилагаю задание на тренировку {{ rating.session.title|urlencode }} для пилота {{ rating.pilot.name|urlencode }}.%0A%0AСсылка на задание:%0A{{ request.build_absolute_uri|urlencode }}%0A%0AС уважением."-->
+<!--   class="print-btn" style="margin-left: 12px; text-decoration: none; display: inline-block;">-->
+<!--  ✉️ Отправить на почту-->
+<!--</a>-->
+
+<a href="mailto:veguschin@nordstar.ru?subject=Задание на тренировку: {{ rating.pilot.name|urlencode }} – {{ rating.session.title|urlencode }}&body=Здравствуйте!%0A%0AПрилагаю задание на тренировку {{ rating.session.title|urlencode }} для пилота {{ rating.pilot.name|urlencode }}.%0A%0AСсылка на задание:%0A{{ secure_print_url|urlencode }}%0A%0AС уважением."
+   class="print-btn" style="margin-left: 12px; text-decoration: none; display: inline-block;">
+  ✉️ Отправить на почту
+</a>
+
+</body>
+</html> 

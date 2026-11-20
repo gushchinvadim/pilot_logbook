@@ -1,0 +1,56 @@
+<!-- templates/pilot_training/pilot_ratings_history.html -->
+<h1>История оценок: {{ pilot.user.get_full_name }}</h1>
+
+{% for session in sessions %}
+  <div style="margin-bottom: 30px; border: 1px solid #ccc; padding: 15px; border-radius: 8px;">
+    <h3>
+      Сессия от {{ session.date }}
+      {% if session.instructor %}
+        (Инструктор: {{ session.instructor.user.get_full_name }})
+      {% endif %}
+    </h3>
+
+    <table border="1" cellpadding="8" cellspacing="0" style="width: 100%; border-collapse: collapse;">
+      <thead>
+        <tr style="background: #f0f0f0;">
+          <th>Упражнение</th>
+          <th>Оценка</th>
+          <th>Комментарий</th>
+          <th>Оценил</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for task in session.tasks.all %}
+          {% with rating=task.rating %}
+            <tr>
+              <td>{{ task.template.name }}</td>
+              <td style="text-align: center;">
+                {% if rating %}
+                  <strong>{{ rating.score }}</strong>
+                {% else %}
+                  —
+                {% endif %}
+              </td>
+              <td>{{ rating.feedback|default:"—" }}</td>
+              <td>
+                {% if rating and rating.instructor %}
+                  {{ rating.instructor.user.get_full_name }}
+                {% else %}
+                  —
+                {% endif %}
+              </td>
+            </tr>
+          {% endwith %}
+        {% empty %}
+          <tr><td colspan="4">Нет заданий в этой сессии.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <p><a href="{% url 'pilot_training:session_details' session.id %}">Подробнее о сессии</a></p>
+  </div>
+{% empty %}
+  <p><em>У этого пилота пока нет сессий.</em></p>
+{% endfor %}
+
+<a href="{% url 'pilot_training:select_pilot' %}">← Назад к выбору пилота</a>

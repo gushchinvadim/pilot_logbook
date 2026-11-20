@@ -1,0 +1,14 @@
+{# templates/admin/pilot_change_form.html #}
+
+{% extends 'admin/change_form.html' %}
+
+{% block submit_buttons_bottom %}
+    {{ block.super }}
+    {% if analytics_url %}
+        <div class="submit-row">
+            <a href="{{ analytics_url }}" target="_blank" class="default" style="background: #17a2b8; color: white; padding: 10px 15px; border-radius: 4px; text-decoration: none;">
+                📊 Открыть аналитику пилота
+            </a>
+        </div>
+    {% endif %}
+{% endblock %}

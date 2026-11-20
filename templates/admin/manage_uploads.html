@@ -1,0 +1,35 @@
+{% extends "admin/base_site.html" %}
+{% block title %}Управление загрузками{% endblock %}
+
+{% block content %}
+<h2>Файлы в /media/uploads/</h2>
+
+{% if messages %}
+  {% for message in messages %}
+    <div style="color: green;">✓ {{ message }}</div>
+  {% endfor %}
+{% endif %}
+
+{% if files %}
+  <ul style="list-style: none; padding: 0;">
+    {% for file in files %}
+      <li style="margin: 8px 0; padding: 6px; border: 1px solid #eee; border-radius: 3px;">
+        📎 <a href="/media/uploads/{{ file|urlencode }}" target="_blank">{{ file }}</a>
+        <form method="post" style="display: inline; margin-left: 12px;">
+          {% csrf_token %}
+          <input type="hidden" name="filename" value="{{ file }}">
+          <button type="submit" 
+                  onclick="return confirm('Удалить «{{ file }}»?')"
+                  style="color: red; background: none; border: none; text-decoration: underline; cursor: pointer;">
+            🗑️ Удалить
+          </button>
+        </form>
+      </li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p>Папка <code>media/uploads/</code> пуста.</p>
+{% endif %}
+
+<p><a href="{% url 'admin:index' %}">← Вернуться в админку</a></p>
+{% endblock %}

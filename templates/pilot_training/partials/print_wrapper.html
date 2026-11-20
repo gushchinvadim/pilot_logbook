@@ -1,0 +1,23 @@
+<!-- templates/pilot_training/partials/print_wrapper.html -->
+<div class="no-print" style="text-align: right; margin-bottom: 15px;">
+    <button onclick="loadPilotSessions('{{ pilot_id }}')" style="margin-right: 10px;">
+        ← Свернуть
+    </button>
+
+
+<a href="{% url 'pilot_training:print_rating_clean' rating.id %}" target="_blank" style="text-decoration: none;">
+    <button>🖨 Отправить</button>
+</a>
+
+
+</div>
+
+{% if "FTD Сессия 5" in rating.session.title %}
+    {% include "pilot_training/partials/ftd_s5_print_assignment_inner.html" %}
+{% elif "FTD" in rating.session.title %}
+    {% include "pilot_training/partials/ftd_print_assignment_inner.html" %}
+{% elif "LOFT" in rating.session.description%}
+    {% include "pilot_training/partials/print_assignment_loft_inner.html"%}
+{% else %}
+    {% include "pilot_training/partials/print_assignment_inner.html" %}
+{% endif %}

@@ -1,0 +1,31 @@
+.crew-workspace { max-width: 1120px; margin: auto; color: #172b41; }
+.crew-workspace * { box-sizing: border-box; }
+.crew-workspace h2, .crew-workspace h3, .crew-workspace h4 { color: #172b41; margin: 0 0 12px; }
+.crew-message { padding: 14px 18px; border-radius: 10px; background: #eaf3fa; line-height: 1.5; }
+.crew-message.crew-error { color: #9d2626; background: #fff0ef; }
+.crew-muted { color: #52677b; font-size: 14px; line-height: 1.5; }
+.crew-field { display: grid; gap: 7px; margin: 12px 0; font-size: 15px; }
+.crew-field select, .crew-field textarea, .crew-workspace > select { width: 100%; padding: 12px; border: 1px solid #b9c7d4; border-radius: 8px; color: #172b41; background: white; font: inherit; }
+.crew-field textarea { resize: vertical; min-height: 70px; }
+.crew-pilot-tabs { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 12px; margin: 20px 0; }
+.crew-pilot-tab { padding: 16px; border: 2px solid #cad7e2; border-radius: 12px; background: #fff; text-align: left; color: #172b41; cursor: pointer; min-height: 90px; }
+.crew-pilot-tab strong, .crew-pilot-tab span { display: block; }
+.crew-pilot-tab span { margin-top: 8px; font-size: 14px; }
+.crew-pilot-tab[aria-pressed=true] { border-color: #087cb5; background: #eaf5fc; }
+.crew-exercise { border: 1px solid #d8e2eb; padding: 20px; margin: 16px 0; border-radius: 12px; background: #fff; }
+.crew-workspace summary { cursor: pointer; padding: 12px 0; font-weight: 600; }
+.crew-competency { display: grid; grid-template-columns: minmax(180px,1fr) minmax(200px,2fr); gap: 16px; border-top: 1px solid #e1e7ed; }
+.crew-pilot-form { max-height: 70vh; overflow: auto; padding: 8px 12px 24px 0; scroll-behavior: auto; }
+.crew-primary, .crew-secondary { padding: 13px 20px; border-radius: 8px; font: inherit; cursor: pointer; }
+.crew-primary { color: #fff; background: #086e9e; border: 1px solid #086e9e; }
+.crew-secondary { color: #172b41; border: 1px solid #9eb1c2; background: #fff; }
+.crew-pairing { padding: 10px 18px; margin: 16px 0; background: #f3f6f9; border-radius: 10px; }
+.crew-workspace button:focus-visible, .crew-workspace select:focus-visible, .crew-workspace textarea:focus-visible { outline: 3px solid #42a7d6; outline-offset: 3px; }
+.crew-workspace button:disabled { opacity: .6; cursor: default; }
+@media (max-width: 640px) {
+    .crew-pilot-tabs { gap: 6px; }
+    .crew-pilot-tab { padding: 10px; }
+    .crew-competency { grid-template-columns: 1fr; gap: 0; }
+    .crew-exercise { padding: 12px; }
+    .crew-primary { width: 100%; }
+}

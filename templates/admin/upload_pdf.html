@@ -1,0 +1,17 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block title %}Загрузка PDF{% endblock %}
+
+{% block content %}
+<h1>Загрузка PDF-документа</h1>
+<form method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+  <p>
+    <label for="id_pdf_file">PDF-файл:</label>
+    <input type="file" name="pdf_file" id="id_pdf_file" accept=".pdf" required>
+  </p>
+  <button type="submit" class="default">Загрузить</button>
+</form>
+<p><a href="{{ request.META.HTTP_REFERER|default:'/' }}">← Назад</a></p>
+{% endblock %}

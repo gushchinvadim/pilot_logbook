@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+{% load static %}
+
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Задание на тренировку - {{ pilot.name }}</title>
+    <style>
+        body {font-family: 'Times New Roman', serif; font-size: 11pt; margin: 1cm;}
+        table {width: 100%; border-collapse: collapse; table-layout: fixed;}
+        td {border: 1px solid black; padding: 5px; vertical-align: top; word-wrap: break-word;}
+        .no-border {border: none;}
+        .center {text-align: center;}
+        .signature {margin-top: 20px;}
+        @media print {
+            @page {size: A4; margin: 0.5cm 0.5cm 0.5cm 2cm;}
+            body {margin: 0;}
+            .print-btn {display: none;}
+            tr {break-inside: avoid; page-break-inside: avoid;}
+        }
+    </style>
+</head>
+<body>
+
+<button class="print-btn" onclick="window.print()" style="margin: 20px; padding: 10px 20px;">🖨️ Печать</button>
+
+<!-- Таблица 1: Колонтитул -->
+<table class="center">
+  <tr>
+    <td colspan="5">
+        <img src="{% static 'logo-nordstar.png' %}"
+             alt="NordStar Logo" 
+             style="height: 40px; width: auto; vertical-align: middle;">
+    </td>
+    <td colspan="8">ЖУРНАЛ ФИКСИРУЮЩИЙ ПРОГРЕСС<br>ОБУЧЕНИЯ НА ТРЕНАЖЕРНОМ<br>УСТРОЙСТВЕ ИМИТАЦИИ ПОЛЕТА</td>
+    <td colspan="5">ЗК.АУЦ.23</td>
+  </tr>
+</table>
+
+<br>
+
+<!-- Текст с фамилией пилота -->
+<p class="center">
+    Авиационный учебный центр<br>
+    Акционерного общества «Авиакомпания «НордСтар»<br>
+    Настоящим подтверждается что слушатель<br>
+    <strong>{{ pilot.name }},</strong>
+</p>
+<p class="center">успешно прошел обучение на тренажерном устройстве имитации полета по программе:</p>
+
+<!-- Таблица 2: Статическая информация -->
+<table>
+  <tr>
+    <td colspan="9">ППП.АУЦ.11 Выпуск 1</td>
+    <td colspan="9">Этап 2.</td>
+  </tr>
+  <tr>
+    <td colspan="9">Тип ВС: Боинг-737NG</td>
+    <td colspan="9">Тренажерная подготовка</td>
+  </tr>
+</table>
+
+<br><br>
+
+<!-- Таблица 3: Динамические сессии -->
+<table>
+  <tr>
+    <td colspan="1">№</td>
+    <td colspan="3">Дата проведения занятия, время его начала (дд.мм.гггг/чч.мм)</td>
+    <td colspan="3">Налет и количество посадок (д/н чч.мм/чч.мм - хх/хх)</td>
+    <td colspan="3">Часть программы, которая выполнялась при обучении</td>
+    <td colspan="5">Фамилия, имя, отчество (если имеется) инструктора тренажера, проводящего обучение</td>
+    <td colspan="3">Наименование тренажера</td>
+  </tr>
+  
+  {% for session in training_sessions %}
+  <tr>
+    <td colspan="1" class="center">{{ forloop.counter }}</td>
+    <td colspan="3" class="center">
+        {% if session.planned_at %}
+            {{ session.planned_at|date:"d.m.Y/H.i" }}
+        {% else %}
+            —
+        {% endif %}
+    </td>
+    <td colspan="3" class="center">03.00/01.00 06/02</td>
+    <td colspan="3">{{ session.session.title }}</td>
+    <td colspan="5">{{ session.instructor.name }}</td>
+    <td colspan="3" class="center">
+        {% if "FTD" in session.session.title %}
+            FTD
+        {% elif "FFS" in session.session.title %}
+            FFS
+        {% else %}
+            —
+        {% endif %}
+    </td>
+  </tr>
+  {% empty %}
+  <tr>
+    <td colspan="6" class="center">Нет данных о сессиях</td>
+  </tr>
+  {% endfor %}
+</table>
+
+<br><br>
+
+<!-- Финальный текст -->
+<p>
+    Итоговая проверка знаний<br>
+    (уровень продемонстрированных<br> знаний и навыков проверяемого):
+    <strong>______________________________________________________________</strong>
+</p>
+<br>
+
+<p>
+    Фамилия, имя, отчество<br> инструктора тренажера,<br>
+    проводящего проверку &nbsp;__________________________________________ &nbsp;/&nbsp;
+    <strong>{{ ffs_instructor_name }}</strong>
+</p>
+<p style="font-size: 7pt; margin-left: 35%;">(Подпись)</p>
+
+</body>
+</html>

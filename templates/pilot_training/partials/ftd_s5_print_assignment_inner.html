@@ -1,0 +1,126 @@
+<!--templates/pilot_training/partials/ftd_print_assignment_inner.html-->
+<h3 class="session-title">{{ rating.session.title }}</h3>
+
+<table>
+  <tr>
+    <td colspan="9">
+      <strong>Задание на тренировку, пилот: {{ rating.pilot.name }}<br>
+      Раздел 1. Промежуточная оценка знаний, навыков (умений)</strong>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="3">B737 600/700/800/900 <br> Type Rating Course</td>
+    <td colspan="3"><strong>{{ rating.session.title }}</strong></td>
+    <td colspan="3">Аэродромы: <span id="venue">_______, _______</span></td>
+  </tr>
+</table>
+
+<table>
+    <tr>
+        <td colspan="5">{{ rating.session.description }}<br> Сценарий тренировки:</td>
+        <td colspan="2">НЕ выполнено в соответствии SOP,<br> подпись инструктора</td>
+        <td colspan="2">Выполнено в соответствии SOP,<br> подпись инструктора</td>
+    </tr>
+    {% for re in rating_exercises %}
+        {% with ex=re.assignment.exercise %}
+        <tr>
+            <td colspan="5">{{ re.assignment.order|default:"—" }}. {{ ex.name }}</td>
+            <td colspan="2">
+                {% if re.score and re.score < 3 %}
+                    ✓ Не выполнено
+                {% else %}
+                    —
+                {% endif %}
+            </td>
+            <td colspan="2">
+                {% if re.score and re.score >= 3 %}
+                    ✓ Выполненно
+                {% else %}
+                    —
+                {% endif %}
+            </td>
+        </tr>
+        {% endwith %}
+    {% empty %}
+        <tr><td colspan="9">Нет оценённых упражнений</td></tr>
+    {% endfor %}
+</table>
+
+<table>
+    <tr>
+        <td colspan="10">
+            <b>Комментарии/Не выполненные задания (При необходимости используйте обратную сторону):</b>
+            <div id="general-notes" style="font-size: 10pt; line-height: 1.2;">
+                <!-- Свободные комментарии инструктора -->
+                {% if rating.general_notes %}
+                    {{ rating.general_notes|linebreaksbr }}
+                    <br>
+                {% endif %}
+
+                <!-- Замечания из компетенций с фазами полёта -->
+                {% for re in rating_exercises %}
+                    {% with ex=re.assignment.exercise %}
+                        {% if re.pro_remarks %}
+                            <span>{{ ex.phase_of_flight|default:"Фаза не указана" }}: {{ re.pro_remarks }}</span><br>
+                        {% endif %}
+                        {% if re.com_remarks %}
+                            <span>{{ ex.phase_of_flight|default:"Фаза не указана" }}: {{ re.com_remarks }}</span><br>
+                        {% endif %}
+                        {% if re.fpa_remarks %}
+                            <span>{{ ex.phase_of_flight|default:"Фаза не указана" }}: {{ re.fpa_remarks }}</span><br>
+                        {% endif %}
+                        {% if re.fpm_remarks %}
+                            <span>{{ ex.phase_of_flight|default:"Фаза не указана" }}: {{ re.fpm_remarks }}</span><br>
+                        {% endif %}
+                        {% if re.ltw_remarks %}
+                            <span>{{ ex.phase_of_flight|default:"Фаза не указана" }}: {{ re.ltw_remarks }}</span><br>
+                        {% endif %}
+                        {% if re.psd_remarks %}
+                            <span>{{ ex.phase_of_flight|default:"Фаза не указана" }}: {{ re.psd_remarks }}</span><br>
+                        {% endif %}
+                        {% if re.saw_remarks %}
+                            <span>{{ ex.phase_of_flight|default:"Фаза не указана" }}: {{ re.saw_remarks }}</span><br>
+                        {% endif %}
+                        {% if re.wlm_remarks %}
+                            <span>{{ ex.phase_of_flight|default:"Фаза не указана" }}: {{ re.wlm_remarks }}</span><br>
+                        {% endif %}
+                    {% endwith %}
+                {% empty %}
+                    {% if not rating.general_notes %}
+                        <span>—</span>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </td>
+    </tr>
+</table>
+
+<table>
+    <tr>
+        <td colspan="2">Ознакомлен: <br><br><br> {{ rating.pilot.name }}<br><br><br><br> __________________  &nbsp;&nbsp;<p style="font-size: 7pt;">Фамилия И.О./Подпись</p></td>
+        <td colspan="7"><span style="font-size: 16pt;">☐</span>  Допустить к разделу 2 <br> <span style="font-size: 16pt;">☐</span>Повторно пройти FTD Сессию 5<br><br>
+        Дата «{{ rating.created_at|date:"d" }}» {{ rating.created_at|date:"F Y" }} г.<br><br>
+            Инструктор: {{ rating.instructor.name }} / _____________________  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<p style="font-size: 7pt;">Фамилия И.О./Подпись</p></td>
+    </tr>
+</table>
+
+<!--<button class="print-btn" onclick="window.print()">🖨 Распечатать</button>-->
+
+    <style>
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+        td {
+            border: 1px solid black;
+            padding: 2px;
+            vertical-align: top;
+            word-wrap: break-word;
+        }
+        .session-title {
+            text-align: right;
+        }
+
+    </style>

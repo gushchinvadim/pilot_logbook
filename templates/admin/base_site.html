@@ -1,0 +1,37 @@
+{% extends "admin/base.html" %}
+{% load static %}  <!-- ⬅️ ЭТО ОБЯЗАТЕЛЬНО -->
+
+{% block extrahead %}
+  <link rel="shortcut icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
+  <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
+{% endblock %}
+
+{% block title %}Admin SIM Training{% endblock %}
+{% block branding %}
+  <h1 id="site-name"><a href="{% url 'admin:index' %}">Админка SIM Training</a></h1>
+{% endblock %}
+
+{% block nav-global %}
+<ul style="list-style: none; padding: 0; margin: 0;">
+  <li style="list-style: none;">
+    <a href="/admin/upload-sessions/" class="button">📤 Загрузить Excel Сессий</a>
+  </li>
+    <li style="list-style: none;">
+    <a href="/admin/upload-pilots/" class="button">📤 Загрузить Excel Пилотов</a>
+  </li>
+    <li style="list-style: none;"><a href="/admin/manage-uploads/" class="button">📁 Управление загрузками Excel</a></li>
+  <li style="list-style: none;">
+    <a href="/admin/download-template/" class="button">📥 Скачать шаблон Excel</a>
+  </li>
+  <li style="list-style: none;">
+    <a href="/admin/upload-pdf/" class="button">📄 Загрузить PDF-документ</a>
+  </li>
+  <li style="list-style: none;">
+    <a href="/admin/manage-docs/" class="button">🗂️ Управление PDF</a></li>
+  <li style="list-style: none;">
+    <a href="/admin/pilot_training/trainingsession/calendar/" class="button">📅 Календарь запланированных сессий</a></li>
+  <li style="list-style: none;">
+    <a href="{% url 'admin:rating_session_completed_list' %}" class="button">📋 Выполненные задания</a></li>
+</ul>
+{% endblock %}
+

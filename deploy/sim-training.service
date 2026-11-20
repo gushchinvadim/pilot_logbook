@@ -1,0 +1,21 @@
+[Unit]
+Description=SIM Training Django API
+After=network.target postgresql.service
+
+[Service]
+Type=simple
+User=simtraining
+Group=simtraining
+WorkingDirectory=/srv/sim-training/current
+EnvironmentFile=/etc/sim-training.env
+ExecStart=/srv/sim-training/current/.venv/bin/gunicorn --config deploy/gunicorn.conf.py pilot_logbook.wsgi:application
+Restart=on-failure
+RestartSec=5
+UMask=0027
+PrivateTmp=true
+NoNewPrivileges=true
+ProtectSystem=full
+ProtectHome=true
+
+[Install]
+WantedBy=multi-user.target

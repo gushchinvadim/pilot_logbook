@@ -1,0 +1,23 @@
+<h3>Данные пилота</h3>
+<p><strong>ФИО:</strong> {{ pilot.name }}</p>
+<p><strong>Лицензия:</strong> {{ pilot.license }}</p>
+<p><strong>Налёт:</strong> {{ pilot.experience }} ч</p>
+<p><strong>Учебное заведение:</strong> {{ pilot.graduated_at }}</p>
+<p><strong>Опыт стеклянной кабины:</strong> {{ pilot.glass_cockpit|yesno:"Да,Нет" }}</p>
+<p><strong>КВС:</strong> {{ pilot.is_captain|yesno:"Да,Нет" }}</p>
+
+<h4>Проведённые сессии:</h4>
+{% if rating_sessions %}
+    <ul>
+    {% for rs in rating_sessions %}
+        <li>
+            <a href="#" onclick="event.preventDefault(); loadPrintForm({{ rs.id }}, {{ pilot.id }}); return false;">
+                {{ rs.session.title }} ({{ rs.created_at|date:"d.m.Y" }})
+            </a>
+        </li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>Нет проведённых сессий.</p>
+{% endif %}
+<p><a href="#" onclick="event.preventDefault(); showPilot(); return false;">← Выбрать другого пилота</a></p>

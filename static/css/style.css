@@ -1,0 +1,229 @@
+body {
+  display: flex;
+  flex-direction: column;    /* Элементы будут сверху вниз: header, content, footer */
+  margin: 0;
+  font-family: Helvetica, sans-serif;
+  min-height: 100vh;         /* Занимает минимум всю высоту экрана */
+  box-sizing: border-box;
+  min-width: 430px;
+}
+
+.header{
+    width: 100%;
+    background-color: rgb(41, 40, 85);
+    display: flex;
+    justify-content: space-between;  /* Растягивает элементы по краям */
+    align-items: center;
+    height: 70px;                    /* Высота хедера (можно изменить) */
+    box-sizing: border-box;
+    font-size: 14px;
+}
+
+.logo{
+    width: 72px;
+}
+
+.header__logo-title {
+
+    color: white;
+    text-align: center;
+    font-size: 1.2em;
+
+}
+
+.cource_info {
+    font-size: 0.8em;
+}
+
+nav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;           /* Опционально: для горизонтального расположения */
+  gap: 16px;               /* Опционально: расстояние между пунктами */
+}
+
+nav li {
+  display: list-item;      /* или inline, или flex — зависит от макета */
+}
+
+.login-link {
+  text-decoration: none;
+  color: white;
+  font-size: 18px;
+
+}
+
+#logout-link {
+  text-decoration: none;
+  color: red;
+  font-weight: bold;
+}
+
+.button-container {
+  display: flex;
+  gap: 2px;
+  padding: 2px;
+  background-color: #f8f8f8;
+  width: 100%;
+  box-sizing: border-box;
+
+}
+
+.nav-button {
+  flex: 1;
+  min-width: 35px;
+  height: 70px;
+  background-color: rgb(228, 93, 15);
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  transition: background-color 0.3s ease;
+}
+
+/* Основной контейнер */
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+/* Контейнер контента с прокруткой */
+#content-area {
+  width: 100%;
+
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  margin-top: 20px;
+}
+
+
+.login-container {
+  padding: 30px;
+  width: 30%;
+  min-width: 330px;
+  max-width: 500px;         /* ограничение ширины */
+  background-color: white;
+  border: 2px solid rgb(64, 64, 65);   /* исправлено: было некорректное свойство */
+  border-radius: 6px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5); /* опционально: тень для красоты */
+  text-align: center;
+  z-index: 2;
+}
+
+
+.footer {
+  background-color:rgb(41, 40, 85);
+  padding: 20px;
+  text-align: center;
+  border-top: 1px solid #ccc;
+  color: white;
+}
+
+.footer ul {
+  list-style: none;
+  display: flex;
+  justify-content: left;
+  gap: 15px;
+  padding: 0;
+  margin: 0 0 10px 0;
+}
+
+.footer li a img {
+  width: 35px;
+  height: 35px;
+  vertical-align: middle;
+  color: white;
+}
+
+.copyright a{
+  margin: 0;
+  font-size: 14px;
+  color: white;
+  text-decoration: none;  /* Опционально: убрать подчёркивание */
+}
+
+.copyright a:hover {
+  text-decoration: underline; /* Опционально: подчёркивание при наведении */
+}
+
+
+.modal-form h3,
+.modal-form h4 {
+
+    margin-bottom: 16px;
+    }
+.modal-form label {
+    font-size: 16px;
+    display: block;
+    margin-bottom: 6px;
+    }
+.modal-form select,
+.modal-form textarea {
+    font-size: 16px;
+    padding: 12px;
+    min-height: 50px;
+    width: 100%;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    box-sizing: border-box;
+    }
+.modal-form textarea {
+    min-height: 50px;
+}
+.modal-form button {
+    font-size: 18px;
+    padding: 12px 24px;
+    background: #27ae60;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    margin-top: 16px;
+    cursor: pointer;
+    }
+.modal-form .form-group {
+    margin-bottom: 16px;
+    }
+
+        /* Кнопка "Наверх" */
+.back-to-top {
+    position: fixed;
+    bottom: 100px; /* Расстояние от нижнего края экрана — выше футера */
+    right: 30px;  /* Отступ справа */
+    width: 50px;
+    height: 50px;
+    border: none;
+    border-radius: 50%;
+    background-color: rgb(228, 93, 15);
+    color: rgb(251, 249, 249);
+    font-size: 24px;
+    font-weight: bold;
+    box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3);
+    cursor: pointer;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    z-index: 1000;
+}
+
+.back-to-top:hover {
+    background-color: rgb(203, 59, 20);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0, 123, 255, 0.4);
+}
+
+ .back-to-top.show {
+    opacity: 1;
+    visibility: visible;
+}

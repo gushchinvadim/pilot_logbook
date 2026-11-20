@@ -1,0 +1,57 @@
+<!-- templates/pilot_training/evaluate_session.html -->
+<h1>Оценка сессии: {{ session.assignment.title }}</h1>
+<p><strong>Пилот:</strong> {{ session.pilot.name }}</p>
+<p><strong>Инструктор:</strong> {{ session.instructor.name }}</p>
+
+<form method="post">
+  {% csrf_token %}
+  <table border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; width: 100%;">
+    <thead>
+      <tr>
+        <th>№</th>
+        <th>Упражнение</th>
+        <th>Описание</th>
+        <th>Оценка (2-5)</th>
+        <th>Замечания</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for task, form in zipped_data %}
+        <tr>
+          <td>{{ task.order }}</td>
+          <td>{{ task.exercise.name }}</td>
+          <td>{{ task.exercise.description|truncatewords:10 }}</td>
+          <td>
+            {{ form.score }}
+            {% if form.score.errors %}
+              <div style="color: red;">{{ form.score.errors }}</div>
+            {% endif %}
+          </td>
+          <td>
+            {{ form.feedback }}
+            {% if form.feedback.errors %}
+              <div style="color: red;">{{ form.feedback.errors }}</div>
+            {% endif %}
+          </td>
+        </tr>
+      {% empty %}
+        <tr>
+          <td colspan="5">Нет упражнений для оценки.</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <br>
+  <button type="submit" style="padding: 10px 20px; font-size: 16px;">Сохранить оценки</button>
+  <a href="{% url 'session_detail' session.id %}" style="margin-left: 10px;">Отмена</a>
+</form>
+
+{% if messages %}
+  <div style="margin-top: 20px;">
+    {% for message in messages %}
+      <p style="color: {% if message.tags == 'error' %}red{% elif message.tags == 'success' %}green{% else %}blue{% endif %};">
+        {{ message }}
+      </p>
+    {% endfor %}
+  </div>
+{% endif %}

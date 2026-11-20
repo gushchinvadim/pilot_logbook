@@ -1,0 +1,149 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Оценка сессии</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .form-group { margin: 15px 0; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        select, textarea { width: 100%; padding: 8px; margin-bottom: 10px; }
+        .exercise-item { border: 1px solid #ddd; padding: 15px; margin-bottom: 10px; border-radius: 5px; }
+        .exercise-name { font-weight: bold; color: #1a5276; }
+        .score-remarks { display: grid; grid-template-columns: 1fr 2fr; gap: 10px; margin-top: 10px; }
+        button { padding: 10px 20px; background: #2980b9; color: white; border: none; cursor: pointer; font-size: 1em; }
+        button:hover { background: #1a5276; }
+    </style>
+</head>
+<body>
+    <h1>Оценка тренажёрной сессии</h1>
+
+    <div class="form-group">
+        <label for="pilot">Пилот:</label>
+        <select id="pilot" onchange="loadSessions()">
+            <option value="">-- Выберите пилота --</option>
+            {% for p in pilots %}
+                <option value="{{ p.id }}">{{ p.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="session">Сессия:</label>
+        <select id="session" onchange="loadExercises()" disabled>
+            <option value="">-- Сначала выберите пилота --</option>
+        </select>
+    </div>
+
+    <div id="exercises-container" style="display:none;">
+        <h3>Упражнения</h3>
+        <div id="exercises-list"></div>
+
+        <div class="form-group">
+            <label for="general_notes">Общие замечания:</label>
+            <textarea id="general_notes" rows="3"></textarea>
+        </div>
+
+        <button onclick="submitRating()">Сохранить оценку</button>
+    </div>
+
+    <script>
+        let authToken = localStorage.getItem('authToken');
+        let instructorId = {{ instructor.id }};  // Передаётся из контекста
+
+        function loadSessions() {
+            const pilotId = document.getElementById('pilot').value;
+            const sessionSelect = document.getElementById('session');
+            sessionSelect.innerHTML = '<option value="">Загрузка...</option>';
+            sessionSelect.disabled = false;
+
+            fetch(`/api/sessions/available/?pilot_id=${pilotId}`, {
+                headers: { 'Authorization': 'Token ' + authToken }
+            })
+            .then(r => r.json())
+            .then(sessions => {
+                sessionSelect.innerHTML = '<option value="">-- Выберите сессию --</option>';
+                sessions.forEach(s => {
+                    const opt = document.createElement('option');
+                    opt.value = s.id;
+                    opt.textContent = s.title;
+                    sessionSelect.appendChild(opt);
+                });
+            });
+        }
+
+        function loadExercises() {
+            const sessionId = document.getElementById('session').value;
+            const container = document.getElementById('exercises-container');
+            const list = document.getElementById('exercises-list');
+            list.innerHTML = '';
+
+            fetch(`/api/session/${sessionId}/exercises/`, {
+                headers: { 'Authorization': 'Token ' + authToken }
+            })
+            .then(r => r.json())
+            .then(exercises => {
+                container.style.display = 'block';
+                exercises.forEach(ex => {
+                    const div = document.createElement('div');
+                    div.className = 'exercise-item';
+                    div.innerHTML = `
+                        <div class="exercise-name">${ex.order}. ${ex.name}</div>
+                        <div class="score-remarks">
+                            <select id="score_${ex.id}" class="score">
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                            </select>
+                            <textarea id="remarks_${ex.id}" placeholder="Замечания (если есть)" rows="1"></textarea>
+                        </div>
+                    `;
+                    list.appendChild(div);
+                });
+            });
+        }
+
+        function submitRating() {
+            const pilotId = document.getElementById('pilot').value;
+            const sessionId = document.getElementById('session').value;
+            const generalNotes = document.getElementById('general_notes').value;
+
+            const exercises = [];
+            document.querySelectorAll('.exercise-item').forEach(item => {
+                const id = item.querySelector('.score').id.split('_')[1];
+                exercises.push({
+                    assignment_id: id,
+                    score: document.getElementById(`score_${id}`).value,
+                    remarks: document.getElementById(`remarks_${id}`).value
+                });
+            });
+
+            fetch('/api/rating-sessions/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Token ' + authToken
+                },
+                body: JSON.stringify({
+                    pilot_id: pilotId,
+                    session_id: sessionId,
+                    instructor_id: instructorId,
+                    general_notes: generalNotes,
+                    exercises: exercises
+                })
+            })
+            .then(r => r.json())
+            .then(() => {
+                alert('Оценка сохранена!');
+                location.reload();
+            })
+            .catch(e => {
+                console.error(e);
+                alert('Ошибка сохранения');
+            });
+        }
+    </script>
+</body>
+</html>
