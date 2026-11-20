@@ -141,3 +141,4 @@ for item in ratings:
 •	Django-Q или Celery — фоновые задачи
 •	Django Admin + django-import-export — загрузка упражнений из Excel
 
+# pilot_logbook
