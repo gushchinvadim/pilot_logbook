@@ -413,6 +413,17 @@ class PortalReadTests(TestCase):
                 self.assertIn(self.client.get(path).status_code, (401, 403))
 
 
+    def test_password_change_revokes_print_grant(self):
+        rating = self.result()
+        client = self.api(self.student)
+        grant = client.post(f'/api/results/{rating.pk}/print-access/')
+        self.assertEqual(grant.status_code, 200)
+        client.force_authenticate(user=None)
+        self.student.set_password('Synthetic-replacement-password-42')
+        self.student.save(update_fields=['password'])
+        self.assertEqual(client.get(grant.data['url']).status_code, 401)
+
+
 class ResultVersionTests(TestCase):
     setUpTestData = classmethod(AccessAndSubmissionTests.setUpTestData.__func__)
     api = AccessAndSubmissionTests.api

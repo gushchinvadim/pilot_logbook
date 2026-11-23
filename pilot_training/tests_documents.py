@@ -66,7 +66,6 @@ class ReferenceDocumentTests(TestCase):
         self.assertEqual(cookie['samesite'], 'Strict')
         self.assertEqual(cookie['path'], self.pdf_url)
         response = browser.get(grant.data['url'], secure=True)
-        self.addCleanup(response.close)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response['Content-Type'], 'application/pdf')
         self.assertTrue(response['Content-Disposition'].startswith('inline;'))
@@ -101,3 +100,10 @@ class ReferenceDocumentTests(TestCase):
         with TemporaryDirectory() as empty, override_settings(MEDIA_ROOT=empty):
             self.client.force_authenticate(self.student)
             self.assertEqual(self.client.get('/api/docs/').json(), {'files': []})
+
+
+    def test_password_change_revokes_browser_pdf_grant(self):
+        _, browser = self.grant()
+        self.student.set_password('Synthetic-replacement-password-42')
+        self.student.save(update_fields=['password'])
+        self.assertEqual(browser.get(self.pdf_url).status_code, 401)

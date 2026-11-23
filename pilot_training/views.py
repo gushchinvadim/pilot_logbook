@@ -18,6 +18,7 @@ from rest_framework.authtoken.models import Token
 from .models import Pilot, Instructor, Exercise, Session, RatingSession, RatingExercise, AssignmentExercise, \
     TrainingSession, PrintToken
 from .permissions import IsInstructorUser, ScopedModelPermission
+from .login_security import LoginThrottle, release_success
 from .access import pilots_for, instructors_for, templates_for, ratings_for, training_sessions_for, can_manage
 from .serializers import PilotSerializer, InstructorSerializer, ExerciseSerializer, SessionSerializer, \
     RatingExerciseSerializer, RatingSubmissionSerializer
@@ -91,6 +92,19 @@ class SessionViewSet(viewsets.ModelViewSet):
 
 class PublicObtainAuthToken(ObtainAuthToken):
     permission_classes = [AllowAny]
+    authentication_classes = []
+    throttle_classes = [LoginThrottle]
+
+    def finalize_response(self, request, response, *args, **kwargs):
+        response = super().finalize_response(request, response, *args, **kwargs)
+        response['Cache-Control'] = 'no-store'
+        return response
+
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
+        release_success(getattr(request, 'login_reservation', None))
+        response['Cache-Control'] = 'no-store'
+        return response
 
 
 # --- API: Авторизация ---

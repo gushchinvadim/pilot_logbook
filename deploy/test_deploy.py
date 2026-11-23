@@ -46,7 +46,7 @@ elif name == 'pg_dump':
     destination = next(arg.split('=', 1)[1] for arg in args if arg.startswith('--file='))
     pathlib.Path(destination).write_bytes(b'fixture-backup')
 elif name == 'pg_restore': pass
-elif name == 'curl': print('200', end='')
+elif name == 'curl': print('503' if os.environ.get('MAINTENANCE') and any(arg.startswith('https://') for arg in args) else '200', end='')
 elif name == 'python':
     if os.environ.get('FAIL_MIGRATE') and args[:2] == ['manage.py', 'migrate']: sys.exit(17)
 else: sys.exit('Unexpected mock: ' + name)
@@ -122,3 +122,14 @@ class DeploymentTests(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0)
         self.assertIn('differ', result.stderr)
         self.assertNotIn(['systemctl', 'stop', 'sim-training'], self.events)
+
+
+    def test_deploy_preserves_maintenance_mode(self):
+        marker = self.server / 'maintenance/enabled'
+        marker.parent.mkdir()
+        marker.write_text('maintenance')
+        result = self.run_deploy(MAINTENANCE='1')
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertTrue(marker.exists())
+        self.assertIn('still enabled', result.stdout)
+        self.assertEqual((self.web / 'index.html').read_text(), 'new-index')

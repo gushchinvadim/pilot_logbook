@@ -49,6 +49,8 @@ class ReferenceCookieAuthentication(BaseAuthentication):
             if grant['filename'] != request.parser_context['kwargs']['filename']:
                 return None
             user = get_user_model().objects.get(pk=grant['user'], is_active=True)
+            if not user.get_session_auth_hash() == grant.get('auth'):
+                return None
         except (signing.BadSignature, KeyError, TypeError, get_user_model().DoesNotExist):
             return None
         return user, None
@@ -61,7 +63,7 @@ def prepare_reference(request):
     reference_file(filename)
     url = reverse('pilot_training:reference_pdf', kwargs={'filename': filename})
     response = Response({'url': url})
-    response.set_cookie('reference_pdf', signing.dumps({'user': request.user.pk, 'filename': filename}, salt=GRANT_SALT),
+    response.set_cookie('reference_pdf', signing.dumps({'user': request.user.pk, 'filename': filename, 'auth': request.user.get_session_auth_hash()}, salt=GRANT_SALT),
         path=url, max_age=GRANT_AGE, secure=request.is_secure(), httponly=True, samesite='Strict')
     response['Cache-Control'] = 'no-store'
     return response

@@ -100,6 +100,8 @@ class PrintCookieAuthentication(BaseAuthentication):
             if grant['rating'] != request.parser_context['kwargs']['pk']:
                 return None
             user = get_user_model().objects.get(pk=grant['user'], is_active=True)
+            if not user.get_session_auth_hash() == grant.get('auth'):
+                return None
         except (signing.BadSignature, KeyError, TypeError, get_user_model().DoesNotExist):
             return None
         return user, None
@@ -111,7 +113,7 @@ def prepare_result_print(request, pk):
     get_object_or_404(ratings_for(request.user), pk=pk)
     path = reverse('pilot_training:print_result', kwargs={'pk': pk})
     response = Response({'url': path})
-    response.set_cookie('result_print', signing.dumps({'user': request.user.pk, 'rating': pk},
+    response.set_cookie('result_print', signing.dumps({'user': request.user.pk, 'rating': pk, 'auth': request.user.get_session_auth_hash()},
                         salt='result-print'), max_age=300, path=path,
                         httponly=True, secure=request.is_secure(), samesite='Strict')
     response['Cache-Control'] = 'no-store'

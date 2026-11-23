@@ -4,7 +4,7 @@ from django.contrib import admin
 from django.http import HttpResponseRedirect, JsonResponse
 from django.template.response import TemplateResponse
 from django.utils.html import format_html
-from rest_framework.authtoken.models import Token
+from rest_framework.authtoken.models import Token, TokenProxy
 from rest_framework.exceptions import ValidationError
 from . import views
 from datetime import timedelta, timezone
@@ -41,52 +41,22 @@ def get_urls():
 admin.site.get_urls = get_urls
 
 
+from .login_security import protect_admin_login
+admin.site.login = protect_admin_login(admin.site.login)
+
 # ============ Регистрация моделей ============
 
 @admin.register(Instructor)
 class InstructorAdmin(admin.ModelAdmin):
-    list_display = ('name', 'date_of_birth', 'license', 'company', 'get_token', 'token_actions')
-    readonly_fields = ['get_token']
+    list_display = ('name', 'date_of_birth', 'license', 'company')
     actions = None
 
-    def get_urls(self):
-        urls = super().get_urls()
-        custom_urls = [
-            path('<int:object_id>/generate-token/', self.admin_site.admin_view(self.generate_or_update_token),
-                 name='generate-token'),
-        ]
-        return custom_urls + urls
 
-    def token_actions(self, obj):
-        return format_html(
-            '<a class="button" href="{}">Сгенерировать токен</a>',
-            reverse('admin:generate-token', args=[obj.id])
-        )
-
-    token_actions.short_description = 'Действия'
-
-    def generate_or_update_token(self, request, object_id, *args, **kwargs):
-        instructor = Instructor.objects.get(pk=object_id)
-        user = instructor.user
-        if not user:
-            self.message_user(request, "Инструктор не связан с пользователем.")
-            return HttpResponseRedirect(f"/admin/pilot_training/instructor/{object_id}")
-
-        token, created = Token.objects.get_or_create(user=user)
-        if not created:
-            token.delete()
-            token = Token.objects.create(user=user)
-
-        self.message_user(request, f"Новый токен успешно сгенерирован: {token.key}")
-        return HttpResponseRedirect(f"/admin/pilot_training/instructor/{object_id}")
-
-    def get_token(self, obj):
-        try:
-            return obj.user.auth_token.key
-        except Exception:
-            return "—"
-
-    get_token.short_description = 'Токен'
+# API credentials are not administrative directory data. Login issues the user's
+# own credential; no staff role can read or mint another user's token in the UI.
+for credential_model in (Token, TokenProxy):
+    if admin.site.is_registered(credential_model):
+        admin.site.unregister(credential_model)
 
 
 @admin.register(Pilot)

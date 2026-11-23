@@ -422,3 +422,14 @@ class ResultAcknowledgement(ImmutableRecord):
     class Meta:
         verbose_name = 'Ознакомление с результатом'
         verbose_name_plural = 'Ознакомления с результатами'
+
+
+class LoginBudget(models.Model):
+    """Shared login attempt windows. Keys are HMACs, never raw IPs/usernames."""
+    key = models.CharField(max_length=64, primary_key=True)
+    scope = models.CharField(max_length=12)
+    attempts = models.PositiveIntegerField(default=0)
+    expires_at = models.DateTimeField(db_index=True)
+
+    class Meta:
+        default_permissions = ()

@@ -80,6 +80,7 @@ if [[ $deps_changed == true ]]; then
 fi
 manage check --deploy
 manage migrate --noinput
+manage purge_login_budgets
 manage collectstatic --noinput
 # Copy hashed assets first; retain previous assets for open browser tabs and the saved index.
 for entry in "$stage/frontend/"*; do
@@ -91,6 +92,9 @@ sudo find "$WEB" -type d -exec chmod 2750 {} +
 sudo find "$WEB" -type f -exec chmod 640 {} +
 sudo -u www-data test -r "$WEB/assets/$(basename "$(find "$stage/frontend/assets" -type f -name '*.js' -print -quit)")"
 
+if sudo test -f /etc/systemd/system/sim-training.service.d/30-sim-training-security.conf; then
+    sudo /usr/bin/python3 deploy/permissions_control.py enforce
+fi
 sudo systemctl start "$SERVICE"
 service_stopped=false
 backend_ready=false
@@ -104,9 +108,14 @@ done
 # Publish index last, atomically, after the matching backend and assets are ready.
 sudo install -o deploy -g www-data -m 640 "$stage/frontend/index.html" "$WEB/.index-$revision.html"
 sudo mv -f "$WEB/.index-$revision.html" "$WEB/index.html"
+expected_http=200
+if [[ -f /srv/sim-training/maintenance/enabled ]]; then expected_http=503; fi
 for path in / /admin/login/; do
     code=$(curl --silent --show-error --output /dev/null --write-out '%{http_code}' --max-time 15 "https://$DOMAIN$path")
-    [[ $code == 200 ]] || { printf 'HTTPS check failed: %s (%s)\n' "$path" "$code" >&2; false; }
+    [[ $code == "$expected_http" ]] || { printf 'HTTPS check failed: %s (%s; expected %s)\n' "$path" "$code" "$expected_http" >&2; false; }
 done
+if [[ $expected_http == 503 ]]; then
+    printf 'Maintenance mode is still enabled. Run ./site.sh on from your Mac when ready.\n'
+fi
 printf '\nSIM Training deployed: %s\nBackup: %s\n' "$revision" "$backup"
 sudo systemctl status "$SERVICE" --no-pager -l

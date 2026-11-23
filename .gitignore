@@ -17,3 +17,6 @@ frontend/dist/
 *.sql.gz
 *.tar.gz
 backups/
+
+# Private infrastructure audit snapshots
+security-reports/
