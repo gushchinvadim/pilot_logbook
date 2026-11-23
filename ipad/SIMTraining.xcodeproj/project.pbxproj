@@ -1,0 +1,40 @@
+// !$*UTF8*$!
+{
+ archiveVersion = 1; classes = {}; objectVersion = 56;
+ objects = {
+		49CB8AD6064500E4EBAC3FD2 = { isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "App/API.swift"; sourceTree = "<group>"; };
+		3A74F27BAF04F7C37B7EB753 = { isa = PBXBuildFile; fileRef = 49CB8AD6064500E4EBAC3FD2; };
+		82ADDA0EA0BF2B8B67BB9586 = { isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "App/AppState.swift"; sourceTree = "<group>"; };
+		521FB18B426BCF1EA800706D = { isa = PBXBuildFile; fileRef = 82ADDA0EA0BF2B8B67BB9586; };
+		3ECCA280CEBACDD24F7F9A23 = { isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "App/SIMTrainingApp.swift"; sourceTree = "<group>"; };
+		767A8F915F322B9568D185A9 = { isa = PBXBuildFile; fileRef = 3ECCA280CEBACDD24F7F9A23; };
+		9C42B9012B30DA9F8C69E337 = { isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "App/SecureSession.swift"; sourceTree = "<group>"; };
+		3AC7A4A5DE99425DFC28CC76 = { isa = PBXBuildFile; fileRef = 9C42B9012B30DA9F8C69E337; };
+		D2F55A191D278D792D4C56B5 = { isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "App/Views.swift"; sourceTree = "<group>"; };
+		ADF2E24C67C9766A2B9DBE64 = { isa = PBXBuildFile; fileRef = D2F55A191D278D792D4C56B5; };
+		F34D4605F78236A4191AE745 = { isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "App/WorkspaceView.swift"; sourceTree = "<group>"; };
+		AB206314DC8F1EE0FE71C48E = { isa = PBXBuildFile; fileRef = F34D4605F78236A4191AE745; };
+		181B92B8C91522DBAC181E38 = { isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Core/Drafts.swift"; sourceTree = "<group>"; };
+		336E55F6C32B9E8E04DC78FC = { isa = PBXBuildFile; fileRef = 181B92B8C91522DBAC181E38; };
+		AF868F4C3F81B6F4F0B3084A = { isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Core/FileVault.swift"; sourceTree = "<group>"; };
+		15354921E9C6EC1E1EF323B9 = { isa = PBXBuildFile; fileRef = AF868F4C3F81B6F4F0B3084A; };
+		BB05C6D11C373A3414ABC463 = { isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Core/Models.swift"; sourceTree = "<group>"; };
+		8DAEA6A3A34B7B9C8E55EB45 = { isa = PBXBuildFile; fileRef = BB05C6D11C373A3414ABC463; };
+		38A007151ABE87CC01A5B6E9 = { isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SIMTraining.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		4D820FADAFBC7A1FCACC4F07 = { isa = PBXGroup; path = SIMTraining/Sources; sourceTree = "<group>"; children = (49CB8AD6064500E4EBAC3FD2,82ADDA0EA0BF2B8B67BB9586,3ECCA280CEBACDD24F7F9A23,9C42B9012B30DA9F8C69E337,D2F55A191D278D792D4C56B5,F34D4605F78236A4191AE745,181B92B8C91522DBAC181E38,AF868F4C3F81B6F4F0B3084A,BB05C6D11C373A3414ABC463); };
+		FBDC4F23F93125BBEEAE800C = { isa = PBXGroup; name = Products; sourceTree = "<group>"; children = (38A007151ABE87CC01A5B6E9); };
+		325F10A6957A34D66CB8C0E4 = { isa = PBXGroup; sourceTree = "<group>"; children = (4D820FADAFBC7A1FCACC4F07,FBDC4F23F93125BBEEAE800C); };
+		BCE16DD0260827ECF338C787 = { isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (3A74F27BAF04F7C37B7EB753,521FB18B426BCF1EA800706D,767A8F915F322B9568D185A9,3AC7A4A5DE99425DFC28CC76,ADF2E24C67C9766A2B9DBE64,AB206314DC8F1EE0FE71C48E,336E55F6C32B9E8E04DC78FC,15354921E9C6EC1E1EF323B9,8DAEA6A3A34B7B9C8E55EB45); runOnlyForDeploymentPostprocessing = 0; };
+		7561BFB015D8F536760CB671 = { isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
+		0189424A5A60FED329FA868E = { isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
+		89E1FD6268CC0F221A2BE178 = { isa = XCBuildConfiguration; name = Debug; buildSettings = { SWIFT_VERSION = "5.0"; SDKROOT = "iphoneos"; IPHONEOS_DEPLOYMENT_TARGET = "17.0"; CLANG_ENABLE_MODULES = "YES"; SWIFT_OPTIMIZATION_LEVEL = "-Onone"; SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)"; GCC_PREPROCESSOR_DEFINITIONS = "DEBUG=1 $(inherited)"; }; };
+		E6DE6C99132752C914FEF632 = { isa = XCBuildConfiguration; name = Release; buildSettings = { SWIFT_VERSION = "5.0"; SDKROOT = "iphoneos"; IPHONEOS_DEPLOYMENT_TARGET = "17.0"; CLANG_ENABLE_MODULES = "YES"; SWIFT_OPTIMIZATION_LEVEL = "-O"; }; };
+		862894B703A6DEDF96A9DD6C = { isa = XCConfigurationList; buildConfigurations = (89E1FD6268CC0F221A2BE178,E6DE6C99132752C914FEF632); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
+		7082CC0B6FC1282FCEABD07A = { isa = XCBuildConfiguration; name = Debug; buildSettings = { SWIFT_VERSION = "5.0"; SDKROOT = "iphoneos"; IPHONEOS_DEPLOYMENT_TARGET = "17.0"; CLANG_ENABLE_MODULES = "YES"; SWIFT_OPTIMIZATION_LEVEL = "-Onone"; SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)"; GCC_PREPROCESSOR_DEFINITIONS = "DEBUG=1 $(inherited)"; PRODUCT_NAME = "SIMTraining"; PRODUCT_BUNDLE_IDENTIFIER = "ru.gvedynamics.simtraining"; TARGETED_DEVICE_FAMILY = "2"; SUPPORTED_PLATFORMS = "iphoneos iphonesimulator"; SUPPORTS_MACCATALYST = "NO"; SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = "NO"; CODE_SIGN_STYLE = "Automatic"; DEVELOPMENT_TEAM = ""; INFOPLIST_FILE = "SIMTraining/Info.plist"; GENERATE_INFOPLIST_FILE = "NO"; MARKETING_VERSION = "0.1.0"; CURRENT_PROJECT_VERSION = "1"; LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks"; SWIFT_EMIT_LOC_STRINGS = "YES"; }; };
+		639A7CA24D39909E713B47F7 = { isa = XCBuildConfiguration; name = Release; buildSettings = { SWIFT_VERSION = "5.0"; SDKROOT = "iphoneos"; IPHONEOS_DEPLOYMENT_TARGET = "17.0"; CLANG_ENABLE_MODULES = "YES"; SWIFT_OPTIMIZATION_LEVEL = "-O"; PRODUCT_NAME = "SIMTraining"; PRODUCT_BUNDLE_IDENTIFIER = "ru.gvedynamics.simtraining"; TARGETED_DEVICE_FAMILY = "2"; SUPPORTED_PLATFORMS = "iphoneos iphonesimulator"; SUPPORTS_MACCATALYST = "NO"; SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = "NO"; CODE_SIGN_STYLE = "Automatic"; DEVELOPMENT_TEAM = ""; INFOPLIST_FILE = "SIMTraining/Info.plist"; GENERATE_INFOPLIST_FILE = "NO"; MARKETING_VERSION = "0.1.0"; CURRENT_PROJECT_VERSION = "1"; LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks"; SWIFT_EMIT_LOC_STRINGS = "YES"; }; };
+		C57128001CE614BF8549D6BB = { isa = XCConfigurationList; buildConfigurations = (7082CC0B6FC1282FCEABD07A,639A7CA24D39909E713B47F7); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
+		0E8A3AD980EC179856012B7E = { isa = PBXNativeTarget; buildConfigurationList = C57128001CE614BF8549D6BB; buildPhases = (BCE16DD0260827ECF338C787,7561BFB015D8F536760CB671,0189424A5A60FED329FA868E); buildRules = (); dependencies = (); name = SIMTraining; productName = SIMTraining; productReference = 38A007151ABE87CC01A5B6E9; productType = "com.apple.product-type.application"; };
+		98F54143AB4E86B28C3AFEE0 = { isa = PBXProject; attributes = { LastUpgradeCheck = 2700; TargetAttributes = { 0E8A3AD980EC179856012B7E = { CreatedOnToolsVersion = 27.2; }; }; }; buildConfigurationList = 862894B703A6DEDF96A9DD6C; compatibilityVersion = "Xcode 14.0"; developmentRegion = ru; hasScannedForEncodings = 0; knownRegions = (ru,en,Base); mainGroup = 325F10A6957A34D66CB8C0E4; productRefGroup = FBDC4F23F93125BBEEAE800C; projectDirPath = ""; projectRoot = ""; targets = (0E8A3AD980EC179856012B7E); };
+ };
+ rootObject = 98F54143AB4E86B28C3AFEE0;
+}

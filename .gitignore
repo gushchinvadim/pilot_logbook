@@ -23,3 +23,10 @@ security-reports/
 
 # Local external backup destination (never contains credentials)
 .backup-ssd.json
+
+# Native iPad project build products and personal Xcode state
+ipad/.build/
+ipad/.swiftpm/
+ipad/DerivedData/
+ipad/**/xcuserdata/
+*.xcuserstate

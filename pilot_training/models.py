@@ -154,7 +154,9 @@ class RatingSession(models.Model):
     class Meta:
         verbose_name = "Оценка сессии"
         verbose_name_plural = "Оценки сессий"
-        unique_together = ('pilot', 'session')  # Пилот не может проходить одну сессию дважды
+        constraints = [
+            models.UniqueConstraint(fields=['training_session'], name='unique_rating_per_training'),
+        ]
 
 
 class RatingExercise(models.Model):

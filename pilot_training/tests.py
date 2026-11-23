@@ -125,6 +125,50 @@ class AccessAndSubmissionTests(TestCase):
         self.assertEqual(RatingSession.objects.count(), 1)
         self.assertEqual(len(self.api(self.student).get('/api/rating-sessions/by-pilot/', {'pilot_id': self.pilot.pk}).data), 1)
 
+    def test_legacy_unlinked_result_does_not_block_new_assignment(self):
+        from .result_versions import publish_initial
+        historic = RatingSession.objects.create(pilot=self.pilot, session=self.template,
+            instructor=self.instructor, general_notes='Historical result')
+        RatingExercise.objects.create(rating_session=historic, assignment=self.assignment, score=3)
+        revision = publish_initial(historic, self.teacher)
+        before = (revision.snapshot, revision.content_hash)
+        response = self.submit(self.payload())
+        self.assertEqual(response.status_code, 201, response.data)
+        historic.refresh_from_db(); revision.refresh_from_db()
+        self.assertIsNone(historic.training_session_id)
+        self.assertEqual((revision.snapshot, revision.content_hash), before)
+        self.training.refresh_from_db()
+        self.assertEqual(self.training.status, 'completed')
+        detail = self.api(self.student).get(f'/api/training-sessions/{self.training.pk}/').data
+        self.assertEqual(detail['result']['id'], response.data['rating_session_id'])
+        self.assertEqual(len(self.api(self.student).get('/api/results/').data), 2)
+
+    def test_same_template_can_be_completed_in_distinct_assignments(self):
+        first = self.submit(self.payload())
+        self.assertEqual(first.status_code, 201, first.data)
+        repeat = TrainingSession.objects.create(session=self.template, pilot=self.pilot, instructor=self.instructor)
+        response = self.submit(self.payload(session_id=repeat.pk, general_notes='Second attempt'))
+        self.assertEqual(response.status_code, 201, response.data)
+        self.assertNotEqual(first.data['rating_session_id'], response.data['rating_session_id'])
+        repeat.refresh_from_db(); self.assertEqual(repeat.status, 'completed')
+        self.assertEqual(self.submit(self.payload(session_id=repeat.pk)).status_code, 400)
+        history = self.api(self.student).get('/api/results/').data
+        self.assertEqual({r['training_id'] for r in history}, {self.training.pk, repeat.pk})
+        self.assertEqual(RatingSession.objects.count(), 2)
+
+    def test_database_rejects_second_result_for_exact_assignment(self):
+        from django.db import IntegrityError, transaction
+        self.result()
+        with self.assertRaises(IntegrityError), transaction.atomic():
+            self.result()
+        self.assertEqual(RatingSession.objects.count(), 1)
+
+    def test_existing_result_blocks_resubmission_even_if_status_is_planned(self):
+        self.result()
+        response = self.submit(self.payload())
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(RatingSession.objects.count(), 1)
+
     def test_other_student_and_other_instructor_cannot_submit(self):
         self.assertEqual(self.api(self.student).post('/api/rating-sessions/', self.payload(), format='json').status_code, 403)
         teacher = User.objects.create_user('unassigned-instructor')

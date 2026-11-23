@@ -42,6 +42,17 @@ class ATCDImportTests(TestCase):
         self.assertEqual(TrainingSession.objects.first().schedule_timezone,'Asia/Krasnoyarsk')
         self.assertEqual(self.apply().data['applied'],0); self.assertEqual(ATCDImportLog.objects.count(),1)
 
+    def test_previous_result_does_not_block_import_or_reschedule(self):
+        RatingSession.objects.create(pilot=self.pilots[0], instructor=self.instructor, session=self.session)
+        self.assertEqual(self.apply().status_code, 200)
+        from django.utils.dateparse import parse_datetime
+        self.row['starts_at'] = (parse_datetime(self.row['starts_at']) + timedelta(hours=1)).isoformat()
+        self.row['ends_at'] = (parse_datetime(self.row['ends_at']) + timedelta(hours=1)).isoformat()
+        preview = self.preview()
+        self.assertTrue(preview['can_apply'], preview)
+        self.assertEqual(self.apply(preview).status_code, 200)
+        self.assertEqual(RatingSession.objects.count(), 1)
+
     def test_single_pilot_is_supported(self):
         self.row['pilots'] = self.row['pilots'][:1]
         self.assertEqual(self.apply().status_code,200); self.assertEqual(TrainingSession.objects.count(),1)

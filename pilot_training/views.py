@@ -199,10 +199,6 @@ def create_rating_session(request):
                 training_session=training
             ).exists():
                 return Response({'error': 'Сессия уже оценена или отменена'}, status=400)
-            # The legacy schema allows only one result per pilot/template.
-            # Keep this constraint until the separate attempts migration.
-            if RatingSession.objects.filter(pilot_id=training.pilot_id, session=training.session).exists():
-                return Response({'error': 'Для этого задания уже есть результат. Повторное прохождение требует отдельной попытки.'}, status=400)
             expected = set(AssignmentExercise.objects.filter(
                 session_id=training.session_id
             ).values_list('id', flat=True))

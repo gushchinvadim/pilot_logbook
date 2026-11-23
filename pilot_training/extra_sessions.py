@@ -5,7 +5,7 @@ from django.core.exceptions import ValidationError
 
 
 def validate_extra(row):
-    from .models import TrainingSession, RatingSession, ATCDScheduleLink, AssignmentExercise
+    from .models import TrainingSession, ATCDScheduleLink, AssignmentExercise
     errors = {}
     if row.crew_session_id and ATCDScheduleLink.objects.filter(crew_id=row.crew_session_id).exists():
         errors['is_extra'] = 'Назначение из ATCD нельзя превращать в EXTRA. Создайте отдельное назначение в SIM Training.'
@@ -19,12 +19,6 @@ def validate_extra(row):
         errors['schedule_timezone'] = 'Укажите действительный часовой пояс тренажёра.'
     if row.session_id and not AssignmentExercise.objects.filter(session_id=row.session_id).exists():
         errors['session'] = 'Сначала добавьте нужные упражнения в шаблон EXTRA-задания.'
-    if row.pilot_id and row.session_id:
-        other = TrainingSession.objects.filter(pilot_id=row.pilot_id, session_id=row.session_id).exclude(pk=row.pk).exclude(status='cancelled')
-        ratings = RatingSession.objects.filter(pilot_id=row.pilot_id, session_id=row.session_id)
-        if row.pk: ratings = ratings.exclude(training_session_id=row.pk)
-        if other.exists() or ratings.exists():
-            errors['session'] = 'Для EXTRA создайте отдельный шаблон задания с нужными упражнениями: выбранное задание уже назначалось этому пилоту.'
     if errors: raise ValidationError(errors)
     if row.status != 'planned': return
     candidates = TrainingSession.objects.filter(status='planned', planned_at__lt=row.ends_at).exclude(pk=row.pk)

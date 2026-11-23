@@ -93,26 +93,12 @@ def plan(rows, mappings):
             item['action'] = 'unchanged'
         elif link:
             item['action'] = 'update'
-            if any(r.status != 'planned' or not r.planned_at or r.planned_at <= timezone.now() for r in current) or RatingSession.objects.filter(training_session__in=current).exists() or any(RatingSession.objects.filter(pilot_id=r.pilot_id, session_id=r.session_id).exists() for r in current):
+            if any(r.status != 'planned' or not r.planned_at or r.planned_at <= timezone.now() for r in current) or RatingSession.objects.filter(training_session__in=current).exists():
                 item['errors'].append('Сессия уже началась, отменена или содержит результат. Изменение требует ответственного.')
         if item['action'] in ('create', 'update') and state['status'] == 'planned' and parse_datetime(state['starts_at']) <= timezone.now():
             item['errors'].append('Прошедшие сессии не создаются через импорт расписания.')
-        if item['action'] in ('create', 'update') and state['status'] == 'planned':
-            if TrainingSession.objects.filter(pilot_id__in=state['pilots'], session_id=state['session'], status='planned').exclude(pk__in=[r.pk for r in current]).exists():
-                item['errors'].append('Это задание уже назначено пилоту. Проверьте существующие назначения перед импортом.')
-            if RatingSession.objects.filter(pilot_id__in=state['pilots'], session_id=state['session']).exists():
-                item['errors'].append('По этому заданию уже есть результат пилота. Проверьте сопоставление задания.')
         if item['errors']: item['action'] = 'blocked'
         output.append(item)
-    # A local result is unique per pilot/template. Reject ambiguous reuse before creating assignments.
-    for item in output:
-        if item['action'] not in ('create', 'update') or item['state']['status'] != 'planned': continue
-        state = item['state']
-        if any(other is not item and other.get('state') and other['state']['status'] == 'planned' and
-               other['state']['session'] == state['session'] and set(other['state']['pilots']) & set(state['pilots'])
-               for other in output):
-            item['errors'].append('Один пилот назначен на одно задание несколько раз. Для разных сессий/модулей сопоставьте отдельные шаблоны заданий.')
-            item['action'] = 'blocked'
     # Check both incoming rows and existing assignments, including manual ones.
     changing = [i for i in output if i['action'] in ('create', 'update') and i['state']['status'] == 'planned']
     for item in changing:

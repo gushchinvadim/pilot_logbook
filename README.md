@@ -142,3 +142,8 @@ for item in ratings:
 •	Django Admin + django-import-export — загрузка упражнений из Excel
 
 # pilot_logbook
+
+
+## Приложение для iPad
+
+Первый этап рабочего места инструктора: [инструкция и проект Xcode](ipad/README.md). Код приложения расположен в `ipad/`; сервер и React остаются отдельными частями проекта.

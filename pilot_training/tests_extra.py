@@ -60,13 +60,14 @@ class ManualExtraTests(TestCase):
             planned_at=self.start,ends_at=self.start+timedelta(hours=4))
         with self.assertRaises(ValidationError):self.extra(planned_at=self.start+timedelta(hours=2),ends_at=self.start+timedelta(hours=6))
 
-    def test_extra_requires_times_exercises_and_separate_template(self):
+    def test_extra_requires_times_and_exercises(self):
         for changes in ({'planned_at':None},{'ends_at':None},{'ends_at':self.start}):
             with self.subTest(changes=changes),self.assertRaises(ValidationError):self.extra(**changes)
         empty=Session.objects.create(title='Empty EXTRA')
         with self.assertRaises(ValidationError):self.extra(session=empty)
         TrainingSession.objects.create(session=self.template,pilot=self.pilots[0],instructor=self.instructor,status='completed')
-        with self.assertRaises(ValidationError):self.extra()
+        repeated = self.extra()
+        self.assertEqual(repeated.session_id, self.template.pk)
 
     def test_extra_can_be_graded_independently_of_main_programme(self):
         main=Session.objects.create(title='Main training')
