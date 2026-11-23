@@ -2,7 +2,7 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from rest_framework.authtoken.views import obtain_auth_token
-from . import views, crew_views, portal_views, revision_views
+from . import views, crew_views, portal_views, revision_views, document_views
 from .views import download_template, get_sessions_for_pilot, pilot_analytics_view
 from .views import PublicObtainAuthToken
 
@@ -50,6 +50,8 @@ urlpatterns = [
     path('print-rating-unsafe/<int:rating_id>/', views.print_rating_clean, name='print_rating_clean'),
     path('pilot-partial/', views.pilot_partial, name='pilot_partial'),
 
+    path('api/docs/open/', document_views.prepare_reference, name='prepare_reference'),
+    path('api/docs/file/<str:filename>/', document_views.reference_pdf, name='reference_pdf'),
     path('api/docs/', views.get_docs_list, name='docs_list'),
     path('admin/upload-pdf/', views.upload_pdf, name='upload_pdf'),
     path('admin/manage-docs/', views.manage_docs, name='manage_docs'),

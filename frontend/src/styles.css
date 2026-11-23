@@ -1693,3 +1693,22 @@ button {
     padding: 12px 6px;
   }
 }
+
+.documentation-panel .panel-heading { flex-wrap: wrap; gap: 16px; }
+.documentation-panel .panel-heading label { min-width: min(100%, 260px); }
+.reference-documents { list-style: none; padding: 0; margin: 0; }
+.reference-documents li + li { border-top: 1px solid var(--line, #e5eaf0); }
+.reference-document {
+  display: flex; align-items: center; gap: 16px; width: 100%;
+  padding: 20px 24px; border: 0; border-radius: 0; background: transparent;
+  color: inherit; text-align: left; cursor: pointer;
+}
+.reference-document:hover { background: #f3f7fc; }
+.reference-document svg { flex-shrink: 0; color: #2563a4; }
+.reference-document span { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.reference-document small { flex-shrink: 0; color: #52657a; }
+.reference-document:disabled { cursor: wait; opacity: .65; }
+@media (max-width: 620px) {
+  .documentation-panel .panel-heading label { width: 100%; }
+  .reference-document { padding: 16px; gap: 10px; }
+}

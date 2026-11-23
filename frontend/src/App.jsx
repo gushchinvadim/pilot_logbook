@@ -6,6 +6,7 @@ import CrewWorkspace from "./components/CrewWorkspace.jsx";
 import TrainingDetail from "./components/TrainingDetail.jsx";
 import Results from "./components/Results.jsx";
 import Analytics from "./components/Analytics.jsx";
+import Documentation from "./components/Documentation.jsx";
 
 const roleLabel = {
   instructor: "Инструктор",
@@ -177,6 +178,7 @@ function Portal({ user, onLogout }) {
     ...(isInstructor ? [["crew", "session", "Оценивание экипажа"]] : []),
     ["results", "session", "Результаты занятий"],
     ["analytics", "chart", "Аналитика"],
+    ["documentation", "document", "Документация"],
   ];
   const title = nav.find((n) => n[0] === view)?.[2] || "Задание на тренировку";
   function navigate(next) {
@@ -320,6 +322,8 @@ function Portal({ user, onLogout }) {
                 navigate("crew");
               }}
             />
+          ) : view === "documentation" ? (
+            <Documentation />
           ) : view === "results" ? (
             <Results
               pilotId={role === "student" ? user.pilot_id : null}

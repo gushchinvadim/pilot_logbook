@@ -75,6 +75,7 @@ export function Icon({ name, size = 20 }) {
     calendar:
       "M8 2v4m8-4v4M3 10h18M5 4h14a2 2 0 0 1 2 2v14H3V6a2 2 0 0 1 2-2ZM7 14h2m3 0h2m3 0h1M7 17h2m3 0h2",
     session: "M8 3h8v4H8zM6 5H4v16h16V5h-2M8 12h8m-8 4h6",
+    document: "M14 2H5v20h14V7l-5-5Zm0 0v5h5M8 12h8m-8 4h8",
     chart: "M4 3v18h17M8 16v-5m5 5V6m5 10V9",
     exit: "M9 4H4v16h5m5-5 5-3-5-3m-6 3h11",
     plane: "m3 15 7-3V3l2-1 2 10 7 3v2l-7-1v4l2 1H8l2-1v-4l-7 1z",

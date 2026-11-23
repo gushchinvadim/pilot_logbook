@@ -865,17 +865,8 @@ def pilot_partial(request):
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def get_docs_list(request):
-    docs_dir = os.path.join(settings.MEDIA_ROOT, 'docs')
-    if not os.path.exists(docs_dir):
-        return JsonResponse({'files': []})
-
-    files = [
-        f for f in os.listdir(docs_dir)
-        if f.lower().endswith('.pdf') and os.path.isfile(os.path.join(docs_dir, f))
-    ]
-    # Сортируем для порядка
-    files.sort()
-    return JsonResponse({'files': files})
+    from .document_views import reference_filenames
+    return JsonResponse({'files': reference_filenames()})
 
 # загрузка pdf admin
 
