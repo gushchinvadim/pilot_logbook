@@ -23,7 +23,7 @@ function Pairing({ sessions, onPaired, disabled }) {
       .filter(Boolean)
       .map(
         (s) =>
-          `${s.participants[0].pilot.name} · ${s.session.title} · ${date(s.participants[0].planned_at)}`,
+          `${s.participants[0].pilot.name} · ${s.session.title} · ${date(s.participants[0].planned_at, s.participants[0].schedule_timezone)}`,
       );
     if (
       !window.confirm(
@@ -69,7 +69,10 @@ function Pairing({ sessions, onPaired, disabled }) {
               {options.map((s) => (
                 <option key={s.key} value={s.participants[0].id}>
                   {s.participants[0].pilot.name} · {s.session.title} ·{" "}
-                  {date(s.participants[0].planned_at)}
+                  {date(
+                    s.participants[0].planned_at,
+                    s.participants[0].schedule_timezone,
+                  )}
                 </option>
               ))}
             </select>
@@ -426,13 +429,19 @@ function GroupEditor({
           <span className="eyebrow">
             {group.crew_id ? "ЭКИПАЖНАЯ СЕССИЯ" : "ИНДИВИДУАЛЬНАЯ ЗАПИСЬ"}
           </span>
-          <h2>{group.session.title}</h2>
+          <h2>
+            {group.is_extra && <span className="badge">EXTRA</span>}{" "}
+            {group.session.title}
+          </h2>
           <p>
-            {date(person.planned_at)} · {time(person.planned_at)} ·{" "}
-            {person.venue}
+            {date(person.planned_at, person.schedule_timezone)} ·{" "}
+            {time(person.planned_at, person.schedule_timezone)} · {person.venue}
           </p>
         </div>
       </section>
+      {person.is_extra && person.extra_reason && (
+        <p>Цель дополнительной сессии: {person.extra_reason}</p>
+      )}
       <div className="pilot-tabs" role="group" aria-label="Выбор пилота">
         {group.participants.map((p) => (
           <button
@@ -544,9 +553,13 @@ export default function CrewWorkspace({ user, initialKey }) {
               <option value="">Выберите сессию</option>
               {sessions.map((s) => (
                 <option key={s.key} value={s.key}>
+                  {s.is_extra ? "EXTRA · " : ""}
                   {s.session.title} ·{" "}
                   {s.participants.map((p) => p.pilot.name).join(" / ")} ·{" "}
-                  {date(s.participants[0].planned_at)}
+                  {date(
+                    s.participants[0].planned_at,
+                    s.participants[0].schedule_timezone,
+                  )}
                 </option>
               ))}
             </select>

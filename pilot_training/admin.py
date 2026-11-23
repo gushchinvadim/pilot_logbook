@@ -13,6 +13,8 @@ from .models import Pilot, Instructor, Exercise, Session, AssignmentExercise, Tr
 from django.urls import path, reverse
 from .views import upload_sessions_from_excel, pilot_analytics_view, upload_pilots_from_excel
 from django import forms
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
+from .schedule_time import schedule_zone, local_schedule_time, display_schedule_time, ScheduleDateTimeField
 from django.contrib import admin
 from django.shortcuts import render, get_object_or_404
 
@@ -173,6 +175,25 @@ class SessionAdmin(admin.ModelAdmin):
 
 
 class TrainingSessionForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        name = self.data.get('schedule_timezone') if self.is_bound else self.instance.schedule_timezone
+        zone = schedule_zone(name)
+        for key in ('planned_at', 'ends_at'):
+            original = self.fields.get(key)
+            if original is not None:
+                self.fields[key] = ScheduleDateTimeField(zone, required=original.required,
+                    label=f'{original.label} ({zone.key})',
+                    help_text='Местные дата и время тренажёра в указанном часовом поясе.')
+
+    def clean_schedule_timezone(self):
+        name = self.cleaned_data['schedule_timezone'].strip()
+        try:
+            ZoneInfo(name)
+        except (ZoneInfoNotFoundError, ValueError):
+            raise forms.ValidationError('Укажите часовой пояс, например Europe/Ulyanovsk или Asia/Krasnoyarsk.')
+        return name
+
     class Meta:
         model = TrainingSession
         fields = '__all__'
@@ -181,13 +202,22 @@ class TrainingSessionForm(forms.ModelForm):
 @admin.register(TrainingSession)
 class TrainingSessionAdmin(admin.ModelAdmin):
     form = TrainingSessionForm
-    list_display = ['__str__', 'instructor', 'planned_at', 'status']
-    list_filter = ('session', 'instructor', 'planned_at', 'venue', 'pilot')
+    change_list_template = "admin/pilot_training/trainingsession/change_list.html"
+    list_display = ['session', 'pilot', 'instructor', 'planned_local', 'ends_local', 'schedule_timezone', 'is_extra', 'status']
+    list_filter = ('is_extra', 'session', 'instructor', 'planned_at', 'venue', 'pilot')
     search_fields = ('pilot__name', 'instructor__name', 'session__title')
     date_hierarchy = 'planned_at'
     ordering = ['-planned_at']
     readonly_fields = ['crew_session']
     actions = ['pair_selected_assignments']
+
+    @admin.display(description='Начало по месту тренажёра', ordering='planned_at')
+    def planned_local(self, obj):
+        return display_schedule_time(obj.planned_at, schedule_zone(obj.schedule_timezone))
+
+    @admin.display(description='Окончание по месту тренажёра', ordering='ends_at')
+    def ends_local(self, obj):
+        return display_schedule_time(obj.ends_at, schedule_zone(obj.schedule_timezone))
 
     @admin.action(description="Объединить два выбранных занятия в экипаж", permissions=['change'])
     def pair_selected_assignments(self, request, queryset):
@@ -230,18 +260,23 @@ class TrainingSessionAdmin(admin.ModelAdmin):
         for s in sessions:
             pilot_name = s.pilot.name if s.pilot else "Без пилота"
             instructor_name = s.instructor.name
-            title = f"{s.session.title} | {pilot_name} | {instructor_name}"
-            end = s.planned_at + timedelta(hours=4)
+            zone = schedule_zone(s.schedule_timezone)
+            title = f"{s.session.title} | {pilot_name} | {instructor_name} | {zone.key}"
+            end = s.ends_at or s.planned_at + timedelta(hours=4)
 
             events.append({
                 'id': s.id,
                 'title': title,
-                'start': s.planned_at.isoformat(),
-                'end': end.isoformat(),
+                # Floating wall times: each event is positioned by its own simulator's date/time.
+                'start': local_schedule_time(s.planned_at, zone).replace(tzinfo=None).isoformat(),
+                'end': local_schedule_time(end, zone).replace(tzinfo=None).isoformat(),
                 'url': reverse('admin:pilot_training_trainingsession_change', args=[s.id]),
                 'extendedProps': {
                     'instructor': s.instructor.name,
                     'venue': s.venue or '—',
+                    'timezone': zone.key,
+                    'starts_at_utc': s.planned_at.isoformat(),
+                    'ends_at_utc': end.isoformat(),
                 }
             })
 

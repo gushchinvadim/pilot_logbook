@@ -17,6 +17,10 @@ def pair_assignments(ids, *, instructor=None):
         raise ValidationError({'error': 'Одно из занятий уже связано с экипажем.'})
     if first.pilot_id == second.pilot_id:
         raise ValidationError({'error': 'В экипаже должны быть два разных пилота.'})
+    if first.is_extra != second.is_extra:
+        raise ValidationError({'error': 'Оба назначения должны иметь одинаковую отметку EXTRA.'})
+    if first.is_extra and (first.planned_at != second.planned_at or first.ends_at != second.ends_at or first.schedule_timezone != second.schedule_timezone or first.venue != second.venue):
+        raise ValidationError({'error': 'Для EXTRA-экипажа нужны одинаковые время, часовой пояс и место.'})
     if first.session_id != second.session_id or first.instructor_id != second.instructor_id:
         raise ValidationError({'error': 'Нужны одинаковое задание и один инструктор.'})
     if any(row.status == 'cancelled' for row in rows):

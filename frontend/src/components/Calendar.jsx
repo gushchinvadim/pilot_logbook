@@ -1,8 +1,11 @@
 import { useMemo, useState } from "react";
 import { date, time, dayKey } from "../lib/data.js";
 import { Badge, Empty } from "./Common.jsx";
-export default function Calendar({ sessions, onOpen }) {
-  const today = dayKey(new Date());
+export default function Calendar({ sessions, onOpen, onRefresh }) {
+  const today = dayKey(
+    new Date(),
+    Intl.DateTimeFormat().resolvedOptions().timeZone,
+  );
   const [month, setMonth] = useState(() => new Date(today + "T00:00:00Z"));
   const [selected, setSelected] = useState(today);
   const [filter, setFilter] = useState("all");
@@ -20,10 +23,14 @@ export default function Calendar({ sessions, onOpen }) {
     );
   }, [year, m]);
   const selectedSessions = filtered.filter(
-    (s) => dayKey(s.planned_at) === selected,
+    (s) => dayKey(s.planned_at, s.schedule_timezone) === selected,
   );
   const upcoming = filtered
-    .filter((s) => s.status === "planned" && dayKey(s.planned_at) >= today)
+    .filter(
+      (s) =>
+        s.status === "planned" &&
+        dayKey(s.planned_at, s.schedule_timezone) >= today,
+    )
     .sort((a, b) => String(a.planned_at).localeCompare(String(b.planned_at)))
     .slice(0, 4);
   return (
@@ -34,7 +41,12 @@ export default function Calendar({ sessions, onOpen }) {
           <h1>Календарь сессий</h1>
           <p>Ваши занятия и задания для подготовки заранее.</p>
         </div>
-        <span className="timezone">Время в UTC</span>
+        <div className="button-row">
+          <span className="timezone">Время по месту проведения</span>
+          <button className="quiet" onClick={onRefresh}>
+            Обновить расписание
+          </button>
+        </div>
       </div>
       <div className="stats">
         <div>
@@ -98,7 +110,9 @@ export default function Calendar({ sessions, onOpen }) {
           <div className="calendar-grid">
             {days.map((d) => {
               const key = dayKey(d),
-                items = filtered.filter((s) => dayKey(s.planned_at) === key);
+                items = filtered.filter(
+                  (s) => dayKey(s.planned_at, s.schedule_timezone) === key,
+                );
               return (
                 <button
                   key={key}
@@ -150,10 +164,13 @@ export default function Calendar({ sessions, onOpen }) {
                 onClick={() => onOpen(s.id)}
               >
                 <div className="button-row">
-                  <b>{time(s.planned_at)}</b>
+                  <b>{time(s.planned_at, s.schedule_timezone)}</b>
                   <Badge status={s.status} />
                 </div>
-                <h3>{s.session.title}</h3>
+                <h3>
+                  {s.is_extra && <span className="badge">EXTRA</span>}{" "}
+                  {s.session.title}
+                </h3>
                 <p>{s.pilot?.name}</p>
                 <small>
                   {s.venue || "Место не указано"} <span>↗</span>
@@ -181,9 +198,13 @@ export default function Calendar({ sessions, onOpen }) {
                 onClick={() => onOpen(s.id)}
               >
                 <span>
-                  {date(s.planned_at)} · {time(s.planned_at)}
+                  {date(s.planned_at, s.schedule_timezone)} ·{" "}
+                  {time(s.planned_at, s.schedule_timezone)}
                 </span>
-                <h3>{s.session.title}</h3>
+                <h3>
+                  {s.is_extra && <span className="badge">EXTRA</span>}{" "}
+                  {s.session.title}
+                </h3>
                 <p>{s.pilot?.name}</p>
                 <strong>Открыть задание →</strong>
               </button>

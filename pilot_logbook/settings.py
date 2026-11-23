@@ -214,3 +214,6 @@ CSRF_COOKIE_HTTPONLY = False
 if DEBUG:
     SESSION_COOKIE_SECURE = False
     CSRF_COOKIE_SECURE = False
+# ATCD credentials stay on the server. Empty key disables integration.
+ATCD_BASE_URL = config('ATCD_BASE_URL', default='https://nordstar.atcdocs.ru')
+ATCD_EXPORT_KEY = config('ATCD_EXPORT_KEY', default='')

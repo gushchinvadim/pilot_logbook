@@ -1,0 +1,11 @@
+[Unit]
+Description=SIM Training backup at 03:30 Moscow time
+
+[Timer]
+OnCalendar=*-*-* 03:30:00 Europe/Moscow
+Persistent=true
+AccuracySec=1min
+Unit=sim-training-backup.service
+
+[Install]
+WantedBy=timers.target

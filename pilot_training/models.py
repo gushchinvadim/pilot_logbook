@@ -14,7 +14,7 @@ from pilot_training import forms
 class Pilot(models.Model):
     user = models.OneToOneField(User, on_delete=models.PROTECT,
                                 help_text="Удаление пользователя запрещено, если он привязан к тренировке.", null=False)
-    name = models.CharField("ФИО пилота", max_length=50)
+    name = models.CharField("ФИО пилота", max_length=350)
     date_of_birth = models.DateField("Дата рождения", null=True, blank=True)
     graduated_at = models.CharField("Какое учебное заведение закончил, год окончания", max_length=50, default="Unknown")
     license = models.CharField("Номер лицензии, дата выдачи", max_length=20, unique=True)
@@ -236,7 +236,7 @@ class TrainingProgram(models.Model):
 
 
 class CrewSession(models.Model):
-    """An explicit pair of existing individual assignments; no result is moved."""
+    """One or two individual assignments for a simulator session; results stay separate."""
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -261,6 +261,12 @@ class TrainingSession(models.Model):
     venue = models.CharField("Место проведения", max_length=100, default="Тренажерный центр", null=True, blank=True)
     planned_at = models.DateTimeField("Дата и время", null=True, blank=True)
 
+    is_extra = models.BooleanField("EXTRA — вне программы обучения", default=False,
+        help_text="Дополнительная сессия назначается только в SIM Training и не передаётся в ATCD.")
+    extra_reason = models.TextField("Цель дополнительной сессии", blank=True)
+    ends_at = models.DateTimeField("Окончание", null=True, blank=True)
+    schedule_timezone = models.CharField("Часовой пояс расписания", max_length=64, default='UTC')
+
     STATUS_CHOICES = [
         ('planned', 'Запланирована'),
         ('completed', 'Проведена'),
@@ -270,7 +276,10 @@ class TrainingSession(models.Model):
 
     def __str__(self):
         if self.planned_at:
-            return f"{self.session.title} — {self.pilot.name} ({self.planned_at.strftime('%d.%m.%Y %H:%M')})"
+            from .schedule_time import local_schedule_time, schedule_zone
+            zone = schedule_zone(self.schedule_timezone)
+            local = local_schedule_time(self.planned_at, zone)
+            return f"{self.session.title} — {self.pilot.name} ({local:%d.%m.%Y %H:%M} {zone.key})"
         return f"{self.session.title} — {self.pilot.name} (без времени)"
 
     def clean(self):
@@ -278,13 +287,18 @@ class TrainingSession(models.Model):
 
         if self.crew_session_id:
             peers = TrainingSession.objects.filter(crew_session_id=self.crew_session_id).exclude(pk=self.pk)
-            if peers.count() != 1 or peers.filter(pilot_id=self.pilot_id).exists() or peers.exclude(
-                session_id=self.session_id, instructor_id=self.instructor_id
+            if peers.count() > 1 or peers.filter(pilot_id=self.pilot_id).exists() or peers.exclude(
+                session_id=self.session_id, instructor_id=self.instructor_id, is_extra=self.is_extra
             ).exists():
                 raise ValidationError(
                     "Участники экипажа должны иметь разных пилотов, одинаковое задание и одного инструктора. "
                     "Нельзя менять эти поля только у одного участника."
                 )
+
+        if self.is_extra:
+            from .extra_sessions import validate_extra
+            validate_extra(self)
+            return super().clean()
 
         if not self.planned_at:
             return  # ошибка будет при валидации поля
@@ -433,3 +447,35 @@ class LoginBudget(models.Model):
 
     class Meta:
         default_permissions = ()
+
+
+class ATCDPilotLink(models.Model):
+    source_id = models.PositiveBigIntegerField(unique=True)
+    pilot = models.OneToOneField(Pilot, on_delete=models.PROTECT)
+
+
+class ATCDInstructorLink(models.Model):
+    source_id = models.PositiveBigIntegerField(unique=True)
+    instructor = models.OneToOneField(Instructor, on_delete=models.PROTECT)
+
+
+class ATCDTemplateLink(models.Model):
+    source_key = models.CharField(max_length=100, unique=True)
+    session = models.ForeignKey(Session, on_delete=models.PROTECT)
+
+
+class ATCDScheduleLink(models.Model):
+    source_id = models.PositiveBigIntegerField(unique=True)
+    crew = models.OneToOneField(CrewSession, on_delete=models.PROTECT)
+    snapshot = models.JSONField()
+    imported_at = models.DateTimeField(auto_now=True)
+    imported_by = models.ForeignKey(User, on_delete=models.PROTECT)
+
+    class Meta:
+        permissions = [('sync_atcd', 'Может получать расписание из ATCD')]
+
+
+class ATCDImportLog(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True)
+    user = models.ForeignKey(User, on_delete=models.PROTECT)
+    changes = models.JSONField()

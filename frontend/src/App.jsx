@@ -8,6 +8,8 @@ import Results from "./components/Results.jsx";
 import Analytics from "./components/Analytics.jsx";
 import Documentation from "./components/Documentation.jsx";
 
+import ATCDSchedule from "./components/ATCDSchedule.jsx";
+
 const roleLabel = {
   instructor: "Инструктор",
   student: "Слушатель",
@@ -179,6 +181,9 @@ function Portal({ user, onLogout }) {
     ["results", "session", "Результаты занятий"],
     ["analytics", "chart", "Аналитика"],
     ["documentation", "document", "Документация"],
+    ...(role === "manager" && user.can_sync_atcd
+      ? [["atcd", "calendar", "Получить из ATCD"]]
+      : []),
   ];
   const title = nav.find((n) => n[0] === view)?.[2] || "Задание на тренировку";
   function navigate(next) {
@@ -304,6 +309,7 @@ function Portal({ user, onLogout }) {
             ) : (
               <Calendar
                 sessions={calendarSessions}
+                onRefresh={() => setVersion((v) => v + 1)}
                 onOpen={(id) => {
                   setTrainingId(id);
                   setView("detail");
@@ -322,6 +328,8 @@ function Portal({ user, onLogout }) {
                 navigate("crew");
               }}
             />
+          ) : view === "atcd" ? (
+            <ATCDSchedule onApplied={() => setVersion((v) => v + 1)} />
           ) : view === "documentation" ? (
             <Documentation />
           ) : view === "results" ? (

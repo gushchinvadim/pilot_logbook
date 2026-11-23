@@ -24,8 +24,8 @@ def participant(row, *, include_result=False):
     results = list(row.ratingsession_set.all())
     item = {
         'id': row.pk, 'pilot': {'id': row.pilot_id, 'name': row.pilot.name},
-        'status': row.status, 'planned_at': row.planned_at, 'venue': row.venue,
-        'has_result': bool(results),
+        'status': row.status, 'planned_at': row.planned_at, 'ends_at': row.ends_at, 'schedule_timezone': row.schedule_timezone, 'venue': row.venue,
+        'has_result': bool(results), 'is_extra': row.is_extra, 'extra_reason': row.extra_reason,
     }
     if include_result:
         result = results[0] if results else None
@@ -53,7 +53,7 @@ def crew_sessions(request):
         key = f'crew:{row.crew_session_id}' if row.crew_session_id else f'single:{row.pk}'
         if key not in groups:
             groups[key] = {
-                'key': key, 'crew_id': row.crew_session_id,
+                'key': key, 'crew_id': row.crew_session_id, 'is_extra': row.is_extra,
                 'session': {'id': row.session_id, 'title': row.session.title},
                 'participants': [],
             }

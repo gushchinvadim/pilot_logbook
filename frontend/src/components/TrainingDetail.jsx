@@ -13,9 +13,13 @@ export default function TrainingDetail({ id, isInstructor, onGrade, onBack }) {
       <div className="page-heading">
         <div>
           <span className="eyebrow">ЗАДАНИЕ НА ПОДГОТОВКУ</span>
-          <h1>{s.session.title}</h1>
+          <h1>
+            {s.is_extra && <span className="badge">EXTRA</span>}{" "}
+            {s.session.title}
+          </h1>
           <p>
-            {date(s.planned_at)} · {time(s.planned_at)} ·{" "}
+            {date(s.planned_at, s.schedule_timezone)} ·{" "}
+            {time(s.planned_at, s.schedule_timezone)} ·{" "}
             {s.venue || "Место не указано"}
           </p>
         </div>
@@ -35,6 +39,12 @@ export default function TrainingDetail({ id, isInstructor, onGrade, onBack }) {
           <strong>{s.exercises.length}</strong>
         </div>
       </section>
+      {s.is_extra && s.extra_reason && (
+        <section className="panel description">
+          <h2>Цель дополнительной сессии</h2>
+          <p>{s.extra_reason}</p>
+        </section>
+      )}
       {s.session.description && (
         <section className="panel description">
           <h2>Описание занятия</h2>

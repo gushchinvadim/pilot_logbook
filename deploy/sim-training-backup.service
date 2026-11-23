@@ -1,0 +1,22 @@
+[Unit]
+Description=SIM Training daily database and document backup
+After=postgresql.service
+
+[Service]
+Type=oneshot
+User=root
+EnvironmentFile=/etc/sim-training.env
+Environment=HOME=/var/backups/sim-training
+ExecStart=/usr/bin/python3 /usr/local/lib/sim-training-backup/backup_daily.py
+WorkingDirectory=/
+UMask=0077
+TimeoutStartSec=30min
+Nice=10
+IOSchedulingClass=best-effort
+IOSchedulingPriority=7
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=strict
+ReadWritePaths=/var/backups/sim-training
+CapabilityBoundingSet=CAP_DAC_READ_SEARCH

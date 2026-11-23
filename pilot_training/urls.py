@@ -2,7 +2,7 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from rest_framework.authtoken.views import obtain_auth_token
-from . import views, crew_views, portal_views, revision_views, document_views
+from . import views, crew_views, portal_views, revision_views, document_views, atcd_views, atcd_people
 from .views import download_template, get_sessions_for_pilot, pilot_analytics_view
 from .views import PublicObtainAuthToken
 
@@ -18,6 +18,9 @@ app_name = 'pilot_training'
 
 
 urlpatterns = [
+    path("api/atcd/pilots/create/", atcd_people.create_pilot),
+    path("api/atcd/options/", atcd_views.options),
+    path("api/atcd/schedule/", atcd_views.synchronize),
     path('', views.index_page, name='index'),
 
     # 🔻 Сначала — кастомные пути (важно!)

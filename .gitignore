@@ -20,3 +20,6 @@ backups/
 
 # Private infrastructure audit snapshots
 security-reports/
+
+# Local external backup destination (never contains credentials)
+.backup-ssd.json
